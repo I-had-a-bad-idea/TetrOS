@@ -1,28 +1,15 @@
-
+; enable character "printing"
 mov ah, 0x0e    ; function number = 0Eh : Display Character
-mov al, 'H'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'E'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'L'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'L'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'O'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, ' '
-int 0x10
-mov al, 'W'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'O'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'R'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'L'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
-mov al, 'D'     ; AL = code of character to display
-int 0x10        ; call INT 10h, BIOS video service
 
+; set al to 64 (1 before 'A')
+mov al, 64
+print_alphabet:
+    ; increase al by one
+    inc al          ; AL = code of character to display
+    int 0x10        ; call INT 10h, BIOS video service
+
+    cmp al, 90
+    jne print_alphabet
 
 jmp $
 ; define 510 bytes + 2 bytes after = 512 bytes (boot sector)
