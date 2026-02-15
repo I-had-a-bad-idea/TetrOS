@@ -52,17 +52,35 @@ GDT_start:
         dw 0xffff ; segment limit
         dw 0x0    ; base address (first 16 bits)
         db 0x0    ; base adress (next 8 bitss)
-        db 0b10011010 ; Present (segment is use), Privilege (highest privilege), Type flags (code, conforming, readable, accessed)
-        db 0b11001111 ; Other (granularity, 32 bits, 64 bits, AVL)
+        db 0b10011010 ; 
+                      ; 1 = Present (segment is use)
+                      ; 00 = Privilege (highest privilege)
+                      ; 1 = code
+                      ; 1 = executable
+                      ; 0 = not conforming
+                      ; 1 = readable
+                      ; 0 = not accessed
+        db 0b11001111 ; Flags:
+                      ; 1 = granularity
+                      ; 1 = 32 bits
+                      ; 0 = not 64 bits
+                      ; 0 = not AVL
         db 0x0    ; base address (last 8 bits)
 
     GDT_data:
         dw 0xffff ; segment limit
-        dw 0x0    ; 16 bits +
-        db 0x0    ; 8 bits = 24 bits (base)
-        db 0b10010010 ; Present (segment is use), Privilege (highest privilege), Type flags (code, direction, writable, accessed)
-        db 0b11001111 ; Other (granularity, 32 bits, 64 bits, AVL)
-        db 0x0    ; last 8 bits of base (total 32 bits)
+        dw 0x0    ; base address (first 16 bits)
+        db 0x0    ; base adress (next 8 bitss)
+        db 0b10010010 ; Type flags (code, direction, writable, accessed)
+                      ; 1 = Present (segment is use)
+                      ; 00 = Privilege (highest privilege)
+                      ; 1 = data
+                      ; 0 = not executable
+                      ; 0 = expand up
+                      ; 1 = writable
+                      ; 0 = not accessed
+        db 0b11001111 ; Flags (same as code segment)
+        db 0x0    ; base address (last 8 bits)
 
 GDT_end:
 
