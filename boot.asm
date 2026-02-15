@@ -66,6 +66,9 @@ print_string_end:
 disk_read_error_msg:
     db "Reading disk failed!", 0
 
+BOOT_DISK:
+    db 0
+
 ; Global-Descriptor-Table                    
 GDT_start:
     GDT_null:  
