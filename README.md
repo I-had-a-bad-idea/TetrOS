@@ -1,7 +1,6 @@
 # TetrOS
 A simple OS to run Tetris
 
-
 You will need to install NASM and some VM to use this.
 
 Compile the asembly using:
@@ -19,3 +18,6 @@ fsutil file createnew disk.img 1048576
 ```bash
 dd if=boot.bin of=disk.img conv=notrunc
 ```
+
+
+`kernel_entry.asm` will be directly behind `boot.asm`.
