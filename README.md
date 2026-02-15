@@ -3,7 +3,7 @@ A simple OS to run Tetris
 
 You will need to install NASM and some VM to use this.
 
-Compile the asembly using:
+Compile the bootloader using:
 
 ```bash
 nasm -f bin boot.asm -o boot.bin

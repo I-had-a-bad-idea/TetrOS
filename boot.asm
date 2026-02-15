@@ -20,8 +20,17 @@ mov ch, 0x00         ; cylinder number = 0
 mov dh, 0x00         ; head number = 0
 mov cl, 0x02         ; sector number = 2 (sector 1 is bootloader)
 mov dl, [BOOT_DISK]  ; drive number
-int 0x13             ; read from disk         ; no error management
+int 0x13             ; read from disk
+; error management
+jc disk_error        ; jmp to disk_error if cf is 1 (error)
+jmp disk_sucess      ; jmp to disk_success if no error
+disk_error:
+    mov si, disk_read_error_msg  ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
 
+disk_sucess:        ; if sucess continue
+        
                                     
 mov ah, 0x0          ; set video mode
 mov al, 0x3          ; set to text mode
@@ -41,7 +50,22 @@ mov cr0, eax ; move eax back to cr0
 jmp CODE_SEG:start_protected_mode ; jmp to code segment (far jump)
 
 jmp $
-                                    
+
+; prints a string stored in ds:si (only works in real-mode )
+print_string:
+    mov ah, 0x0e   ; function number = 0Eh : Display Character
+    mov al, [ds:si] ; get char 
+    cmp al, 0 ; check if end of string
+    je print_string_end    ; jump to print_string_end label
+    int 0x10 ; BIOS interrupt for "printing"
+    inc si   ; next char (increment pointer)
+    jmp print_string ; loop through all of string
+print_string_end:
+    ret
+
+disk_read_error_msg:
+    db "Reading disk failed!", 0
+
 ; Global-Descriptor-Table                    
 GDT_start:
     GDT_null:  
