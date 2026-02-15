@@ -19,8 +19,3 @@ fsutil file createnew disk.img 1048576
 ```bash
 dd if=boot.bin of=disk.img conv=notrunc
 ```
-
-3. Convert to VDI
-```bash
-VBoxManage convertfromraw disk.img boot.vdi --format VDI
-```
