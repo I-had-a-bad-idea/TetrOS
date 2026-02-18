@@ -6,17 +6,60 @@ You will need to install NASM and some VM to use this.
 Compile the bootloader using:
 
 ```bash
-nasm -f bin boot.asm -o boot.bin
+nasm boot.asm -f bin -o binaries/boot.bin
+```
+
+Compile the zeroes:
+
+```bash
+nasm zeroes.asm -f bin -o binaries/zeroes.bin
+```
+
+Compile kernel entry to object file:
+
+```bash
+nasm kernel_entry.asm -f elf -o binaries/kernel_entry.o
+```
+
+Compile kernel to object file:
+
+```bash
+i686-elf-gcc -ffreestanding -m32 -g -c "kernel.c" -o binaries/"kernel.o"
+```
+
+Connect kernel entry and kernel:
+
+```bash
+i686-elf-ld -o binaries/"full_kernel.bin" -Ttext 0x1000 binaries/"kernel_entry.o" binaries/"kernel.o" --oformat binary
+```
+
+Combine them all:
+
+```bash
+cat binaries/"boot.bin" binaries/"full_kernel.bin" binaries/"zeroes.bin"  > binaries/"TetrOS.bin"
+```
+
+All commands together:
+
+```bash
+nasm boot.asm -f bin -o binaries/boot.bin
+nasm zeroes.asm -f bin -o binaries/zeroes.bin
+nasm kernel_entry.asm -f elf -o binaries/kernel_entry.o
+
+i686-elf-gcc -ffreestanding -m32 -g -c "kernel.c" -o binaries/"kernel.o"
+i686-elf-ld -o binaries/"full_kernel.bin" -Ttext 0x1000 binaries/"kernel_entry.o" binaries/"kernel.o" --oformat binary
+
+cat binaries/"boot.bin" binaries/"full_kernel.bin" binaries/"zeroes.bin"  > binaries/"TetrOS.bin"
 ```
 
 For VirtualBox:
-1. Create 1MB raw disk:
+1. (On Windows) Create 1MB raw disk:
 ```bash
 fsutil file createnew disk.img 1048576
 ```
-2. (On Linux) Write bootloader to first 512 bytes
+1. Write bootloader to first 512 bytes
 ```bash
-dd if=boot.bin of=disk.img conv=notrunc
+dd if=binaries/TetrOS.bin of=disk.img conv=notrunc
 ```
 
 
