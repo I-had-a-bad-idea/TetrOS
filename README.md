@@ -53,12 +53,19 @@ cat binaries/"boot.bin" binaries/"full_kernel.bin" binaries/"zeroes.bin"  > bina
 ```
 
 For VirtualBox:
-1. (On Windows) Create 1MB raw disk:
+1. Create 1MB raw disk:
 ```bash
-fsutil file createnew disk.img 1048576
+dd if=/dev/zero of=disk.img bs=1M count=1
 ```
 1. Write bootloader to first 512 bytes
 ```bash
+dd if=binaries/TetrOS.bin of=disk.img conv=notrunc
+```
+
+Together:
+
+```bash
+dd if=/dev/zero of=disk.img bs=1M count=1
 dd if=binaries/TetrOS.bin of=disk.img conv=notrunc
 ```
 
