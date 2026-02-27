@@ -2,3 +2,7 @@
 *.img
 
 !binaries/*.bin
+
+stuff/
+
+.vscode/
