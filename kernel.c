@@ -1,5 +1,5 @@
-// #include "idt.h"
 #include "kernel.h"
+#include "idt.h"
 
 void print_char(char c) {
 
@@ -20,8 +20,10 @@ void print_string(const char* str) {
 }
 
 void main(){
-    // init_idt();
+    init_idt();
     
     print_string("Hello World,\nthis is the kernel!");
+    
+    // asm volatile("ud2");  // trigger invalid opcode on purpose
     return;
 }
