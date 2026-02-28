@@ -1,6 +1,9 @@
 #include "idt.h"
 #include "isr.h"
 
+struct IDT idt_entries[IDT_ENTRY_COUNT];
+struct IDT_PTR idt_ptr;
+
 void load_idt(struct IDT_PTR* idt_ptr) {
     asm volatile("lidt (%0)" : : "r"(idt_ptr));
 }
@@ -12,7 +15,6 @@ void set_idt_gate(int n, uint32_t isr){
     idt_entries[n].type = 0x8E;
     idt_entries[n].base_high = (isr >> 16) & 0xffff;
 }
-
 
 void init_idt() {
     set_idt_gate(0, (uint32_t)isr_0);
