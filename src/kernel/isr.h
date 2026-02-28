@@ -12,9 +12,6 @@ struct registers
 };
 
 
-#define ISR(n) \
-void isr_##n() {};
-
 extern void isr_0();
 extern void isr_1();
 extern void isr_2();

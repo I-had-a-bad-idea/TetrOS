@@ -31,10 +31,10 @@ void main(){
     print_string_literal("Kernel started!\nSetting up the IDT...\n");
     init_idt();
 
-    print_string_literal("Literal");
-    
-    // *(char*)0xb8000 = 'C';
+    print_string_literal("IDT-setup successful!\n");
 
+    
+    // print_string_literal("Triggering invalid opcode..\n");    
     // asm volatile("ud2");  // trigger invalid opcode on purpose
     return;
 }
