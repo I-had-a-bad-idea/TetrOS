@@ -22,7 +22,7 @@ kernel_object_files/isr.o: src/kernel/isr.c | kernel_object_files
 
 # Link all object files to full_kernel.bin
 binaries/full_kernel.bin: binaries/kernel_entry.o kernel_object_files/kernel.o kernel_object_files/idt.o kernel_object_files/isr.o | binaries
-	i686-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
+	i686-elf-ld -o $@ -T linker.ld $^ --oformat binary
 
 # Combine into TetrOS.bin
 binaries/TetrOS.bin: binaries/boot.bin binaries/full_kernel.bin  binaries/zeroes.bin
