@@ -25,7 +25,7 @@ binaries/full_kernel.bin: binaries/kernel_entry.o kernel_object_files/kernel.o k
 	i686-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
 
 # Combine into TetrOS.bin
-binaries/TetrOS.bin: binaries/full_kernel.bin binaries/boot.bin binaries/zeroes.bin
+binaries/TetrOS.bin: binaries/boot.bin binaries/full_kernel.bin  binaries/zeroes.bin
 	cat $^ > $@
 
 # Clean
