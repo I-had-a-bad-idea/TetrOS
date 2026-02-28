@@ -28,8 +28,8 @@ void print_int(int n) {
 }
 
 void main(){
-    // print_char('X');
-    // // init_idt();
+    print_string_literal("Kernel started!\nSetting up the IDT...\n");
+    init_idt();
 
     print_string_literal("Literal");
     
