@@ -71,20 +71,20 @@ void isr_handler(struct registers* regs) {
 void generic_isr_handler() {
     if (!current_regs) return;
 
-    print_string("ISR called: ");
+    print_string_literal("ISR called: ");
     print_int(current_regs->int_no);
-    print_string("\n");
+    print_string_literal("\n");
 
     // Special handling for specifigc interrupts
     switch (current_regs->int_no) {
         case 0:
-            print_string("Division by zero error! Value of eax: ");
+            print_string_literal("Division by zero error! Value of eax: ");
             print_int(current_regs->eax);
-            print_string("\n");
+            print_string_literal("\n");
             break;
         default:
             break;
     }
-    print_string("Halting system.\n");
+    print_string_literal("Halting system.\n");
     asm volatile("hlt");
 }
