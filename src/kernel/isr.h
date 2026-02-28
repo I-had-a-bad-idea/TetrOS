@@ -13,12 +13,24 @@ struct registers
 
 
 #define ISR(n) \
-void isr_##n() { \
-    asm volatile("\tcli"); \
-    asm volatile("\tpush $" #n); \
-    asm volatile("\tpush $" #n); \
-    asm volatile("\tjmp common_isr_stub_handler"); \
-}
+void isr_##n() {};
+
+extern void isr_0();
+extern void isr_1();
+extern void isr_2();
+extern void isr_3();
+extern void isr_4();
+extern void isr_5();
+extern void isr_6();
+extern void isr_7();
+extern void isr_8();
+extern void isr_9();
+extern void isr_10();
+extern void isr_11();
+extern void isr_12();
+extern void isr_13();
+extern void isr_14();
+extern void isr_15();
 
 extern void common_isr_stub_handler();
 extern void isr_handler(struct registers* regs);

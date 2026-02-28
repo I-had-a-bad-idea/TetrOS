@@ -1,6 +1,31 @@
 #include "isr.h"
 
-static struct registers* current_regs = NULL;
+static struct registers* current_regs = 0;
+
+#define ISR(n) \
+void isr_##n() { \
+    asm volatile("\tcli"); \
+    asm volatile("\tpush $" #n); \
+    asm volatile("\tpush $" #n); \
+    asm volatile("\tjmp common_isr_stub_handler"); \
+}
+
+ISR(0);
+ISR(1);
+ISR(2);
+ISR(3);
+ISR(4);
+ISR(5);
+ISR(6);
+ISR(7);
+ISR(8);
+ISR(9);
+ISR(10);
+ISR(11);
+ISR(12);
+ISR(13);
+ISR(14);
+ISR(15);
 
 void common_isr_stub_handler()
 {
@@ -40,7 +65,7 @@ void common_isr_stub_handler()
 void isr_handler(struct registers* regs) {
     current_regs = regs;
     generic_isr_handler();
-    current_regs = NULL;
+    current_regs = 0;
 }
 
 void generic_isr_handler() {
