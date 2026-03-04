@@ -17,11 +17,11 @@ void set_idt_gate(int interrupt, void* base) {
 
 
 void idt_enable_gate(int interrupt) {
-
+    return;
 }
 
 void idt_disable_gate(int interrupt) {
-
+    return;
 }
 
 void init_idt() {

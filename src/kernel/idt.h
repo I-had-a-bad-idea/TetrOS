@@ -20,8 +20,6 @@ struct IDT_PTR {
    uint32_t base_address;  // base address of the first IDT segment
 } __attribute__((packed));
 
-extern struct IDT idt_entries[IDT_ENTRY_COUNT];
-extern struct IDT_PTR idt_ptr;
 
 extern void init_idt();
 void set_idt_gate(int interrupt, void* base);

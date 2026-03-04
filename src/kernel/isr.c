@@ -42,7 +42,9 @@ static const char* const exceptions[] = {
 void isr_initialize_gates();
 
 void init_isr() {
+    print_string_literal("Initializing gates...\n");
     isr_initialize_gates();
+    print_string_literal("Enabling gates...\n");
     for (int i = 0; i < IDT_ENTRY_COUNT; i++) {
         idt_enable_gate(i);
     }
