@@ -1,6 +1,4 @@
 #include "kernel.h"
-#include "idt.h"
-
 
 uint32_t cursor_position = 0;
 
@@ -29,12 +27,15 @@ void print_int(int n) {
 
 void main(){
     print_string_literal("Kernel started!\nSetting up the IDT...\n");
+    init_isr();
     init_idt();
 
     print_string_literal("IDT-setup successful!\n");
 
     
-    // print_string_literal("Triggering invalid opcode..\n");    
+    print_string_literal("Triggering invalid opcode..\n");    
+    int x = 1 / 0;
+    asm volatile("int $0");
     // asm volatile("ud2");  // trigger invalid opcode on purpose
     return;
 }
