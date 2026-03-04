@@ -2,89 +2,67 @@
 
 static struct registers* current_regs = 0;
 
-#define ISR(n) \
-void isr_##n() { \
-    asm volatile("\tcli"); \
-    asm volatile("\tpush $" #n); \
-    asm volatile("\tpush $" #n); \
-    asm volatile("\tjmp common_isr_stub_handler"); \
-}
+ISR_Handler isr_handlers[IDT_ENTRY_COUNT];
 
-ISR(0);
-ISR(1);
-ISR(2);
-ISR(3);
-ISR(4);
-ISR(5);
-ISR(6);
-ISR(7);
-ISR(8);
-ISR(9);
-ISR(10);
-ISR(11);
-ISR(12);
-ISR(13);
-ISR(14);
-ISR(15);
+static const char* const exceptions[] = {
+    "Divide by zero error",
+    "Debug",
+    "Non-maskable Interrupt",
+    "Breakpoint",
+    "Overflow",
+    "Bound Range Exceeded",
+    "Invalid Opcode",
+    "Device Not Available",
+    "Double Fault",
+    "Coprocessor Segment Overrun",
+    "Invalid TSS",
+    "Segment Not Present",
+    "Stack-Segment Fault",
+    "General Protection Fault",
+    "Page Fault",
+    "",
+    "x87 Floating-Point Exception",
+    "Alignment Check",
+    "Machine Check",
+    "SIMD Floating-Point Exception",
+    "Virtualization Exception",
+    "Control Protection Exception ",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "Hypervisor Injection Exception",
+    "VMM Communication Exception",
+    "Security Exception",
+    ""
+};
 
-void common_isr_stub_handler()
-{
-  // save all registers
-  asm volatile("\tpusha");
-  // save ds segment
-  asm volatile("\tmov %ds, %eax");
-  asm volatile("\tpush %eax");
-  // load new data segment for handling interrupt
-  asm volatile("\tmov $0x10, %eax");
-  asm volatile("\tmov %eax, %ds");
-  asm volatile("\tmov %eax, %es");
-  asm volatile("\tmov %eax, %fs");
-  asm volatile("\tmov %eax, %gs");
-  // call common interrupt handler
-  asm volatile("push %esp");
-  asm volatile("\tcall isr_handler");
-  asm volatile("add $4, %esp");
-  // get original ds segment
-  asm volatile("\tpop %eax");
-  // set its value to other segments
-  asm volatile("\tmov %eax, %ds");
-  asm volatile("\tmov %eax, %es");
-  asm volatile("\tmov %eax, %fs");
-  asm volatile("\tmov %eax, %gs");
-  // restore all registers
-  asm volatile("\tpopa");
-  // restore stack space pushed by isr_n() routines
-  // by pushing its isr number into stack
-  asm volatile("\tadd $8, %esp");
-  // store interrupt which was cleared by isr_n()
-  // asm volatile("\tsti");
-  // return after handling interrupt
-  asm volatile("\tiret");
-}
+void isr_initialize_gates();
 
-void isr_handler(struct registers* regs) {
-    current_regs = regs;
-    generic_isr_handler();
-    current_regs = 0;
-}
-
-void generic_isr_handler() {
-    if (!current_regs) return;
-
-    print_string_literal("ISR called: ");
-    print_int(current_regs->int_no);
-    print_string_literal("\n");
-
-    // Special handling for specifigc interrupts
-    switch (current_regs->int_no) {
-        case 0:
-            print_string_literal("Division by zero error! Value of eax: ");
-            print_int(current_regs->eax);
-            print_string_literal("\n");
-            break;
-        default:
-            break;
+void init_isr() {
+    isr_initialize_gates();
+    for (int i = 0; i < IDT_ENTRY_COUNT; i++) {
+        idt_enable_gate(i);
     }
-    print_string_literal("Halting system.\n");
-    asm volatile("hlt");
+    idt_disable_gate(0x80);
+}
+
+void __attribute__((cdecl)) isr_handler(Registers* regs) {
+    if (isr_handlers[regs->interrupt_number] != 0) {
+        isr_handlers[regs->interrupt_number](regs);
+    }
+    else {
+        print_string_literal("Unhandled expection:  ");
+        print_int(regs->interrupt_number);
+        print_string_literal("\n");
+        print_string(exceptions[regs->interrupt_number]);
+        print_string_literal("\n");
+    }
+}
+
+void isr_register_handler(int interrupt, ISR_Handler handler) {
+    isr_handlers[interrupt] = handler;
+    idt_enable_gate(interrupt);
 }
