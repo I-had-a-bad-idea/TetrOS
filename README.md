@@ -25,5 +25,5 @@ make -f Kernel.mk
 make -f VirtualBox.mk
 ```
 
-
-`kernel_entry.asm` will be directly behind `boot.asm`.
+## Notes for myself
+If stuff is broken with no reason: Try increasing the loaded sectors in `boot.asm`
