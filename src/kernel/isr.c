@@ -39,7 +39,7 @@ static const char* const exceptions[] = {
     ""
 };
 
-void isr_initialize_gates();
+void isr_initialize_gates(void);
 
 void init_isr() {
     print_string_literal("Initializing gates...\n");

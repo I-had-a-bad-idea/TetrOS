@@ -35,8 +35,6 @@ void main(){
 
     
     print_string_literal("Triggering invalid opcode..\n");    
-    // int x = 1 / 0;
-    // asm volatile("int $0");
-    // asm volatile("ud2");  // trigger invalid opcode on purpose
+    int x = 1 / 0;
     return;
 }
