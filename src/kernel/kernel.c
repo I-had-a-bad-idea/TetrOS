@@ -30,11 +30,10 @@ void main(){
     init_idt();
     print_string_literal("IDT-setup successful!\nSetting up the ISR...\n");
     init_isr();
-
     print_string_literal("ISR-setup successful!\n");
-
     
-    print_string_literal("Triggering invalid opcode..\n");    
-    int x = 1 / 0;
+    
+    // print_string_literal("Triggering invalid opcode..\n");    
+    // int x = 1 / 0;
     return;
 }

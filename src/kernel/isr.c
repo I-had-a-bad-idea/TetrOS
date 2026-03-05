@@ -61,6 +61,10 @@ void __attribute__((cdecl)) isr_handler(Registers* regs) {
         print_string_literal("\n");
         print_string(exceptions[regs->interrupt_number]);
         print_string_literal("\n");
+
+        for (;;){
+            asm volatile("hlt");
+        }
     }
 }
 
