@@ -42,13 +42,8 @@ static const char* const exceptions[] = {
 void isr_initialize_gates(void);
 
 void init_isr() {
-    print_string_literal("Initializing gates...\n");
+    print_string_literal("Initializing ISRs and IDT gates...\n");
     isr_initialize_gates();
-    print_string_literal("Enabling gates...\n");
-    for (int i = 0; i < IDT_ENTRY_COUNT; i++) {
-        idt_enable_gate(i);
-    }
-    idt_disable_gate(0x80);
 }
 
 void __attribute__((cdecl)) isr_handler(Registers* regs) {

@@ -15,15 +15,6 @@ void set_idt_gate(int interrupt, void* base) {
     idt_entries[interrupt].base_high = ((uint32_t)base >> 16) & 0xffff;
 }
 
-
-void idt_enable_gate(int interrupt) {
-    return;
-}
-
-void idt_disable_gate(int interrupt) {
-    return;
-}
-
 void init_idt() {
     idt_ptr.limit_size = sizeof(idt_entries) - 1;
     idt_ptr.base_address = (uint32_t)&idt_entries;

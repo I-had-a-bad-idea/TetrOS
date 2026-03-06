@@ -23,5 +23,3 @@ struct IDT_PTR {
 
 extern void init_idt();
 void set_idt_gate(int interrupt, void* base);
-void idt_enable_gate(int interrupt);
-void idt_disable_gate(int interrupt);
