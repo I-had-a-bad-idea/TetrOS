@@ -65,5 +65,4 @@ void __attribute__((cdecl)) isr_handler(Registers* regs) {
 
 void isr_register_handler(int interrupt, ISR_Handler handler) {
     isr_handlers[interrupt] = handler;
-    idt_enable_gate(interrupt);
 }
