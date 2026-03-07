@@ -1,7 +1,41 @@
 #include "pic.h"
 
-void PIC_configure(uint8_t pic1_offset, uint8_t pic2_offset) {
-    return;
+#define ICW1_ICW4	0x01		// Indicates that ICW4 will be present
+#define ICW1_SINGLE	0x02		// Single (cascade) mode
+#define ICW1_INTERVAL4	0x04    // Call address interval 4 (8)
+#define ICW1_LEVEL	0x08		// Level triggered (edge) mode
+#define ICW1_INIT	0x10		// Initialization - required!
+
+#define ICW4_8086	0x01		// 8086/88 (MCS-80/85) mode
+#define ICW4_AUTO	0x02		// Auto (normal) EOI
+#define ICW4_BUF_SLAVE	0x08	// Buffered mode/slave
+#define ICW4_BUF_MASTER	0x0C	// Buffered mode/master
+#define ICW4_SFNM	0x10		// Special fully nested (not)
+
+#define CASCADE_IRQ 2
+
+void PIC_remap(uint8_t pic1_offset, uint8_t pic2_offset) {
+    outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+    io_wait();
+    outb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
+    io_wait();
+    outb(PIC1_DATA, pic1_offset);                 // ICW2: Master PIC vector offset
+    io_wait();
+    outb(PIC2_DATA, pic2_offset);                 // ICW2: Slave PIC vector offset
+    io_wait();
+    outb(PIC1_DATA, 1 << CASCADE_IRQ);        // ICW3: tell Master PIC that there is a slave PIC at IRQ2
+    io_wait();
+    outb(PIC2_DATA, 2);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
+    io_wait();
+
+    outb(PIC1_DATA, ICW4_8086);               // ICW4: have the PICs use 8086 mode (and not 8080 mode)
+    io_wait();
+    outb(PIC2_DATA, ICW4_8086);
+    io_wait();
+
+    // Unmask both PICs.
+    outb(PIC1_DATA, 0);
+    outb(PIC2_DATA, 0);
 }
 
 void PIC_send_end_of_interrupt(int irq) {
@@ -12,10 +46,16 @@ void PIC_send_end_of_interrupt(int irq) {
     outb(PIC1_COMMAND, PIC_EOI); // master PIC has to recieve no matter what
 }
 
-void PIC_disable() {
+void PIC_mask_all() {
     outb(PIC1_DATA, 0xff); // Mask all master PIC interrupts
     outb(PIC2_DATA, 0xff); // Mask all slave PIC interrupt
 }
+
+void PIC_unmask_all() {
+    outb(PIC1_DATA, 0); // Unmask all master PIC interrupts
+    outb(PIC2_DATA, 0); // Unmask all slave PIC interrupt
+}
+
 void PIC_mask(int irq) {
     uint16_t port;
     uint8_t value;
@@ -26,10 +66,11 @@ void PIC_mask(int irq) {
         port PIC2_DATA;
         irq -= 8; // PIC2 has its own 8 interrupts
     }
-    
+
     value = inb(port) | (1 << irq);
     outb(port, value);
 }
+
 void PIC_unmask(int irq) {
     uint16_t port;
     uint8_t value;

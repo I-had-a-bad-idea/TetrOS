@@ -10,8 +10,9 @@
 #define PIC2_DATA	(PIC2+1)
 #define PIC_EOI		0x20		/* End-of-interrupt command code */
 
-void PIC_configure(uint8_t pic1_offset, uint8_t pic2_offset);
+void PIC_remap(uint8_t pic1_offset, uint8_t pic2_offset);
 void PIC_send_end_of_interrupt(int irq);
-void PIC_disable();
+void PIC_mask_all();
+void PIC_unmask_all();
 void PIC_mask(int irq);
 void PIC_unmask(int irq);
