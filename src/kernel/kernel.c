@@ -56,6 +56,8 @@ void main(){
     init_irq();
     print_string_literal("PICs setup successfull!\n");
 
+    asm volatile("sti"); // Enable interrupts
+
     print_int(-12345);
     print_char(' ');
     print_int(54321);
