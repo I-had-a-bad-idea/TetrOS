@@ -2,6 +2,20 @@
 
 uint32_t cursor_position = 0;
 
+int timer_ticks = 0;
+void timer_irq(Registers* regs) {
+    timer_ticks++;
+    print_char('.');
+}
+
+int get_timer_ticks() {
+    return timer_ticks;
+}
+
+float get_time() {
+    return timer_ticks * TIMER_SECONDS_PER_TICK;
+}
+
 void print_char(char c) {
 
     unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
@@ -57,6 +71,9 @@ void main(){
     print_string_literal("PICs setup successfull!\n");
 
     asm volatile("sti"); // Enable interrupts
+
+    // Register timer handler
+    irq_register_handler(0, timer_irq);
 
     print_int(-12345);
     print_char(' ');
