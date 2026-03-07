@@ -1,7 +1,8 @@
 #pragma once
 #include "stdint.h"
-#include "idt.h"
 #include "isr.h"
+#include "idt.h"
+#include "irq.h"
 
 #define VIDEO_MEMORY 0xB8000
 #define WHITE_ON_BLACK 0x0F

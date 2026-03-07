@@ -52,7 +52,9 @@ void main(){
     init_idt();
     print_string_literal("IDT-setup successful!\nSetting up the ISR...\n");
     init_isr();
-    print_string_literal("ISR-setup successful!\n");
+    print_string_literal("ISR-setup successful!\nSetting up the PICs...\n");
+    init_irq();
+    print_string_literal("PICs setup successfull!\n");
 
     print_int(-12345);
     print_char(' ');

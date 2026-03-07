@@ -63,7 +63,7 @@ void PIC_mask(int irq) {
     if (irq < 8) { // master PIC
         port = PIC1_DATA;
     } else { // slave PIC
-        port PIC2_DATA;
+        port = PIC2_DATA;
         irq -= 8; // PIC2 has its own 8 interrupts
     }
 
@@ -78,7 +78,7 @@ void PIC_unmask(int irq) {
     if (irq < 8) { // master PIC
         port = PIC1_DATA;
     } else { // slave PIC
-        port PIC2_DATA;
+        port = PIC2_DATA;
         irq -= 8; // PIC2 has its own 8 interrupts
     }
     

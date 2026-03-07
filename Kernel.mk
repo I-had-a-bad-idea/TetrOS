@@ -28,8 +28,16 @@ kernel_object_files/isr_gen.o: src/kernel/isr_gen.c | kernel_object_files
 kernel_object_files/io.o: src/kernel/io.c | kernel_object_files
 	i686-elf-gcc -ffreestanding -m32 -g -c $< -o $@
 
+# Compile pic.c
+kernel_object_files/pic.o: src/kernel/pic.c | kernel_object_files
+	i686-elf-gcc -ffreestanding -m32 -g -c $< -o $@
+
+# Compile irq.c
+kernel_object_files/irq.o: src/kernel/irq.c | kernel_object_files
+	i686-elf-gcc -ffreestanding -m32 -g -c $< -o $@
+
 # Link all object files to full_kernel.bin
-binaries/full_kernel.bin: binaries/kernel_entry.o kernel_object_files/kernel.o kernel_object_files/idt.o kernel_object_files/isr.o binaries/isr.o kernel_object_files/isr_gen.o binaries/io.o kernel_object_files/io.o | binaries
+binaries/full_kernel.bin: binaries/kernel_entry.o kernel_object_files/kernel.o kernel_object_files/idt.o kernel_object_files/isr.o binaries/isr.o kernel_object_files/isr_gen.o binaries/io.o kernel_object_files/io.o kernel_object_files/pic.o kernel_object_files/irq.o | binaries
 	i686-elf-ld -o $@ -T linker.ld $^ --oformat binary
 
 # Combine into TetrOS.bin

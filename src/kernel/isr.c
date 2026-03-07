@@ -63,6 +63,6 @@ void __attribute__((cdecl)) isr_handler(Registers* regs) {
     }
 }
 
-void isr_register_handler(int interrupt, ISR_Handler handler) {
-    isr_handlers[interrupt] = handler;
+void isr_register_handler(int interrupt_number, ISR_Handler handler) {
+    isr_handlers[interrupt_number] = handler;
 }

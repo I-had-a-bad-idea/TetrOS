@@ -14,4 +14,4 @@ typedef struct Registers {
 typedef void (*ISR_Handler)(Registers* regs);
 
 void init_isr();
-extern void isr_register_handler(int interrup_number, ISR_Handler handler);
+extern void isr_register_handler(int interrupt_number, ISR_Handler handler);
