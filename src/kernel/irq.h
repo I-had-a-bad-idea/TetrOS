@@ -13,3 +13,4 @@ typedef void (*IRQ_Handler)(Registers* regs);
 
 void init_irq();
 extern void irq_register_handler(int irq, IRQ_Handler handler);
+extern void irq_register_handler_and_unmask(int irq, IRQ_Handler handler);

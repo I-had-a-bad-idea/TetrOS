@@ -70,10 +70,8 @@ void main(){
     init_irq();
     print_string_literal("PICs setup successfull!\n");
 
-    asm volatile("sti"); // Enable interrupts
-
-    // Register timer handler
-    irq_register_handler(0, timer_irq);
+    // Register timer handler and enable interrupt 0
+    irq_register_handler_and_unmask(0, timer_irq);
 
     print_int(-12345);
     print_char(' ');

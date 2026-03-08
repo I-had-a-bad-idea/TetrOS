@@ -25,8 +25,15 @@ void init_irq() {
     for (int i = 0; i < 16; i++) {
         isr_register_handler(PIC_REMAP_OFFSET + i, irq_handler);
     }
+    
+    asm volatile("sti"); // Enable interrupts
 }
 
 void irq_register_handler(int irq, IRQ_Handler handler) {
     irq_handlers[irq] = handler;
+}
+
+void irq_register_handler_and_unmask(int irq, IRQ_Handler handler) {
+    irq_register_handler(irq, handler);
+    PIC_unmask(irq);
 }
