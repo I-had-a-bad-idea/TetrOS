@@ -33,9 +33,8 @@ void PIC_remap(uint8_t pic1_offset, uint8_t pic2_offset) {
     outb(PIC2_DATA, ICW4_8086);
     io_wait();
 
-    // Unmask both PICs.
-    outb(PIC1_DATA, 0);
-    outb(PIC2_DATA, 0);
+    // Mask all PIC interrupts
+    PIC_mask_all();
 }
 
 void PIC_send_end_of_interrupt(int irq) {
