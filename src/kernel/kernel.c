@@ -27,7 +27,6 @@ void timer_irq(Registers* regs) {
 void keyboard_irq(Registers* regs) {
     uint8_t scancode = inb(0x60);
     if (scancode < 128) { // press
-        print_int(scancode);
         char c = keyboard_scancodes[scancode];
         if (c) {
             pressed_key = c;
