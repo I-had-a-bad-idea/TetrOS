@@ -1,11 +1,37 @@
 #include "kernel.h"
 
+char keyboard_scancodes[128] = {
+0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b',
+'\t',
+'q','w','e','r','t','y','u','i','o','p','[',']','\n',
+0,
+'a','s','d','f','g','h','j','k','l',';','\'','`',
+0,
+'\\',
+'z','x','c','v','b','n','m',',','.','/',
+0,
+'*',
+0,
+' ',
+};
+
+
 uint32_t cursor_position = 0;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
-    print_char('.');
+}
+
+void keyboard_irq(Registers* regs) {
+    uint8_t scancode = inb(0x60);
+    if (scancode < 128) { // press
+        print_int(scancode);
+        char c = keyboard_scancodes[scancode];
+        if (c) {
+            print_char(c);
+        }
+    }
 }
 
 int get_timer_ticks() {
@@ -72,6 +98,8 @@ void main(){
 
     // Register timer handler and enable interrupt 0
     irq_register_handler_and_unmask(0, timer_irq);
+    // Register keyboard handler and enable interrupt 1
+    irq_register_handler_and_unmask(1, keyboard_irq);
 
     print_int(-12345);
     print_char(' ');
