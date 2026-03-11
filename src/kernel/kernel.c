@@ -17,6 +17,7 @@ char keyboard_scancodes[128] = {
 
 
 uint32_t cursor_position = 0;
+char pressed_key = 0;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
@@ -29,7 +30,13 @@ void keyboard_irq(Registers* regs) {
         print_int(scancode);
         char c = keyboard_scancodes[scancode];
         if (c) {
-            print_char(c);
+            pressed_key = c;
+        }
+    }
+    else { // release
+        char c = keyboard_scancodes[scancode - 128];
+        if (c && pressed_key == c) {
+            pressed_key = c;
         }
     }
 }
@@ -40,6 +47,11 @@ int get_timer_ticks() {
 
 float get_time() {
     return timer_ticks * TIMER_SECONDS_PER_TICK;
+}
+
+
+char get_pressed_key() {
+    return pressed_key;
 }
 
 void print_char(char c) {

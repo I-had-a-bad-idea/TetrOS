@@ -12,7 +12,7 @@ mov sp, bp                 ; set stack pointer
 
 ; load kernel from disk
 mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
-mov dh, 32    ; number of sectors to read (currently reads too much to avoid future problems)
+mov dh, 36    ; number of sectors to read (currently reads too much to avoid future problems)
 
 mov ah, 0x02         ; read floppy/hard disk in CHS mode
 mov al, dh           ; number of sectors to read
