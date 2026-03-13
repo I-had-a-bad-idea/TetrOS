@@ -22,6 +22,8 @@ char pressed_key = 0;
 unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 uint32_t cursor_position = 0;
 
+static uint32_t seed = 1234567890;
+
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
@@ -123,6 +125,18 @@ void timer_register(func function, uint32_t interval) {
     timer_events[timer_event_count].function = function;
     timer_events[timer_event_count].interval = interval;
     timer_event_count++;
+}
+
+// Xorshift RNG
+uint32_t rand32() {
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    return seed;
+}
+
+uint32_t rand_range(uint32_t min, uint32_t max) {
+    return min + (rand32() % (max - min + 1));
 }
 
 void main(){

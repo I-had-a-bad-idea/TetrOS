@@ -5,6 +5,8 @@
 #include "irq.h"
 #include "io.h"
 
+extern static uint32_t random_seed;
+
 #define VIDEO_MEMORY 0xB8000
 #define WHITE_ON_BLACK 0x0F
 #define VIDEO_WIDTH 80
@@ -41,5 +43,8 @@ void write_char(int x, int y, char c);
 
 int get_timer_ticks();
 float get_time();
+
+uint32_t rand32();
+uint32_t rand_range(uint32_t min, uint32_t max);
 
 void timer_register(func function, uint32_t interval);
