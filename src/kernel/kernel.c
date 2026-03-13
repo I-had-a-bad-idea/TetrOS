@@ -100,6 +100,18 @@ void print_int(int n) {
     }
 }
 
+void clear_screen() {
+    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
+        video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
+    }
+    cursor_position = 0;
+}
+
+void reset_cursor() {
+    cursor_position = 0;
+}
+
 void timer_register(func function, uint32_t interval) {
     if (timer_event_count >= MAX_TIMER_EVENTS) {
         return;
@@ -129,6 +141,12 @@ void main(){
     init_tetris();
 
     while (1) {
+        if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
+            reset_cursor();
+        }
+        // print_string_literal("In main loop. Ticks: ");
+        // print_int(timer_ticks);
+        // print_char('\n');
         for (int i = 0; i < timer_event_count; i++) {
             if (timer_ticks % timer_events[i].interval == 0) {
                 timer_events[i].function();
