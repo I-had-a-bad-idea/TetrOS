@@ -158,10 +158,15 @@ void main(){
 
     clear_screen();
 
+    int last_timer_ticks = 0;
     while (1) {
         if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
             reset_cursor();
         }
+        if (timer_ticks == last_timer_ticks) {
+            continue;
+        }
+        last_timer_ticks = timer_ticks;
         for (int i = 0; i < timer_event_count; i++) {
             if (timer_ticks % timer_events[i].interval == 0) {
                 timer_events[i].function();
