@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "tetris/tetris.h"
 
 char keyboard_scancodes[128] = {
 0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b',
@@ -98,7 +99,6 @@ void print_int(int n) {
     }
 }
 
-
 void timer_register(*func function, uint32_t interval) {
     if (timer_event_count >= MAX_TIMER_EVENTS) {
         return;
@@ -124,9 +124,8 @@ void main(){
     // Register keyboard handler and enable interrupt 1
     irq_register_handler_and_unmask(1, keyboard_irq);
 
-    print_int(-12345);
-    print_char(' ');
-    print_int(54321);
+    print_string_literal("Starting tetris");
+    init_tetris();
 
     while (1) {
         for (int i = 0; i < timer_event_count; i++) {
