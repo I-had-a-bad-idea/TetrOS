@@ -3,9 +3,8 @@
 
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
-#define FIELD_SIZE FIELD_WIDTH * FIELD_HEIGHT
 
-extern char field[FIELD_SIZE];
+extern char field[FIELD_WIDTH][FIELD_HEIGHT];
 
 void init_tetris();
 void tetris_step();
