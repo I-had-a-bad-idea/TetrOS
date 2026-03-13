@@ -1,6 +1,6 @@
 #include "tetris.h"
 
-char field[FIELD_WIDTH][FIELD_HEIGHT] = {};
+char field[FIELD_HEIGHT][FIELD_WIDTH] = {};
 
 void init_tetris() {
     timer_register(tetris_step, 30);
@@ -12,8 +12,10 @@ void tetris_step() {
 }
 
 void tetris_render() {
-    for (int i = 0; i < FIELD_HEIGHT; i++) {
-        print_string(field[i]); // Print row
+    reset_cursor();   // We dont need a full reset, since we overwrite it
+    for (int x = 0; x < FIELD_HEIGHT; x++) {
+        for (int y = 0; y < FIELD_HEIGHT; y++) {
+            write_char(x, y, field[x][y]);         // Render the coordinates
+        }
     }
-    print_char('\n');
 }
