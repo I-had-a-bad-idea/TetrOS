@@ -142,13 +142,12 @@ void main(){
     print_string_literal("Starting tetris");
     init_tetris();
 
+    clear_screen();
+
     while (1) {
         if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
             reset_cursor();
         }
-        // print_string_literal("In main loop. Ticks: ");
-        // print_int(timer_ticks);
-        // print_char('\n');
         for (int i = 0; i < timer_event_count; i++) {
             if (timer_ticks % timer_events[i].interval == 0) {
                 timer_events[i].function();

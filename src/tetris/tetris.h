@@ -4,7 +4,13 @@
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
 
-extern char field[FIELD_HEIGHT][FIELD_WIDTH];
+#define BLOCK_CHAR '#'
+#define FALLING_BLOCK_CHAR '+' 
+#define VERTICAL_BORDER_CHAR '|'
+#define HORIZONTAL_BORDER_CHAR '-'
+#define EMPTY_CHAR ' '
+
+extern char field[FIELD_WIDTH][FIELD_HEIGHT];
 
 void init_tetris();
 void tetris_step();
