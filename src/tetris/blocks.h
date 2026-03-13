@@ -1,62 +1,16 @@
 #pragma once
+#include "kernel/stdint.h"
 
 #define BLOCK_ARRAY_AXIS_SIZE 4
 
-struct Block {
-    bool cells[BLOCK_ARRAY_AXIS_SIZE][BLOCK_ARRAY_AXIS_SIZE] = {
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0}
-    };
-};
+typedef struct {
+    bool cells[BLOCK_ARRAY_AXIS_SIZE][BLOCK_ARRAY_AXIS_SIZE];
+} Block;
 
-// Tetris Blocks (4x4 representation)
-Block I = {{
-    {0, 1, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 0, 0}
-}};
-
-Block O = {{
-    {0, 0, 0, 0},
-    {0, 1, 1, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}
-}};
-
-Block T = {{
-    {0, 0, 0, 0},
-    {1, 1, 1, 0},
-    {0, 1, 0, 0},
-    {0, 0, 0, 0}
-}};
-
-Block S = {{
-    {0, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 1, 0},
-    {0, 0, 0, 0}
-}};
-
-Block Z = {{
-    {0, 0, 0, 0},
-    {1, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}
-}};
-
-Block J = {{
-    {0, 0, 0, 0},
-    {0, 0, 1, 0},
-    {0, 0, 1, 0},
-    {0, 1, 1, 0}
-}};
-
-Block L = {{
-    {0, 0, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 0, 0},
-    {0, 1, 1, 0}
-}};
+extern Block I;
+extern Block O;
+extern Block T;
+extern Block S;
+extern Block Z;
+extern Block J;
+extern Block L;
