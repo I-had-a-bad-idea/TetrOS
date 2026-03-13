@@ -17,6 +17,7 @@ char keyboard_scancodes[128] = {
 
 
 uint32_t cursor_position = 0;
+uint16_t timer_event_count = 0;
 char pressed_key = 0;
 
 int timer_ticks = 0;
@@ -97,6 +98,19 @@ void print_int(int n) {
     }
 }
 
+
+void timer_register(*func function, uint32_t interval) {
+    if (timer_event_count >= MAX_TIMER_EVENTS) {
+        return;
+    }
+    
+    timer_events[timer_event_count].func = function;
+    timer_events[timer_event_count].interval = interval;
+    timer_event_count++;
+
+    // Register the function
+
+}
 
 void main(){
     print_string_literal("Kernel started!\nSetting up the IDT...\n");
