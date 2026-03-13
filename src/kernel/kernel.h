@@ -37,6 +37,7 @@ void print_int(int n);
 
 void clear_screen();
 void reset_cursor();
+void write_char(int x, int y, char c);
 
 int get_timer_ticks();
 float get_time();

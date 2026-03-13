@@ -16,11 +16,11 @@ char keyboard_scancodes[128] = {
 ' ',
 };
 
-
-uint32_t cursor_position = 0;
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {};
 char pressed_key = 0;
+unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+uint32_t cursor_position = 0;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
@@ -58,7 +58,6 @@ char get_pressed_key() {
 
 void print_char(char c) {
 
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
     if (c == '\n') {
         // move to next line
@@ -101,7 +100,6 @@ void print_int(int n) {
 }
 
 void clear_screen() {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
         video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
     }
@@ -110,6 +108,10 @@ void clear_screen() {
 
 void reset_cursor() {
     cursor_position = 0;
+}
+
+void write_char(int x, int y, char c) {
+    video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
 }
 
 void timer_register(func function, uint32_t interval) {
