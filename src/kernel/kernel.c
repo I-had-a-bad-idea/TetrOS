@@ -104,12 +104,10 @@ void timer_register(*func function, uint32_t interval) {
         return;
     }
     
+    // Register the function
     timer_events[timer_event_count].func = function;
     timer_events[timer_event_count].interval = interval;
     timer_event_count++;
-
-    // Register the function
-
 }
 
 void main(){
@@ -129,6 +127,14 @@ void main(){
     print_int(-12345);
     print_char(' ');
     print_int(54321);
+
+    while (1) {
+        for (int i = 0; i < timer_event_count; i++) {
+            if (timer_ticks % timer_events[i].interval == 0) {
+                timer_events[i].func();
+            }
+        }
+    }
 
     return;
 }
