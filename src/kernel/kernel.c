@@ -22,7 +22,7 @@ char pressed_key = 0;
 unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 uint32_t cursor_position = 0;
 
-static uint32_t seed = 1234567890;
+uint32_t seed = 1234567890;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {

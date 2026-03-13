@@ -5,7 +5,7 @@
 #include "irq.h"
 #include "io.h"
 
-extern static uint32_t random_seed;
+extern uint32_t random_seed;
 
 #define VIDEO_MEMORY 0xB8000
 #define WHITE_ON_BLACK 0x0F

@@ -1,6 +1,9 @@
 #pragma once
 
+// Define bool
+typedef enum { false, true } bool;
 
+// Define uints
 typedef unsigned char       uint8_t;
 typedef signed char         int8_t;
 
