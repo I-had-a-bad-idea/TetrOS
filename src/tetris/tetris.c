@@ -11,5 +11,10 @@ void tetris_step() {
 }
 
 void tetris_render() {
-    return;
+    for(int i = 0; i < FIELD_SIZE; i++) {
+        print_char(field[i]);
+        if (i % FIELD_WIDTH == 0) {
+            print_char('\n');
+        } 
+    }
 }
