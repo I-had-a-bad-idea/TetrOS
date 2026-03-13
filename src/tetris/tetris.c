@@ -1,5 +1,6 @@
 #include "tetris.h"
 
+char field[FIELD_SIZE] = {};
 
 void init_tetris() {
     timer_register(tetris_step, 30);

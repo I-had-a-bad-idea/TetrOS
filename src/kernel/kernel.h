@@ -11,14 +11,16 @@
 
 #define TIMER_SECONDS_PER_TICK 1
 
+typedef void (*func)(void);
+
 typedef struct {
-    void (*func)(void);
+    func function;
     uint32_t interval;
 } timer_event;
 
 #define MAX_TIMER_EVENTS 16
 
-timer_envent timer_events[MAX_TIMER_EVENTS] = {};
+extern timer_event timer_events[MAX_TIMER_EVENTS];
 extern uint16_t timer_event_count;
 
 extern uint32_t cursor_position;
@@ -34,4 +36,4 @@ void print_int(int n);
 int get_timer_ticks();
 float get_time();
 
-void timer_register(*func function, uint32_t interval);
+void timer_register(func function, uint32_t interval);

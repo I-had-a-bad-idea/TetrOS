@@ -19,6 +19,7 @@ char keyboard_scancodes[128] = {
 
 uint32_t cursor_position = 0;
 uint16_t timer_event_count = 0;
+timer_event timer_events[MAX_TIMER_EVENTS] = {};
 char pressed_key = 0;
 
 int timer_ticks = 0;
@@ -99,13 +100,13 @@ void print_int(int n) {
     }
 }
 
-void timer_register(*func function, uint32_t interval) {
+void timer_register(func function, uint32_t interval) {
     if (timer_event_count >= MAX_TIMER_EVENTS) {
         return;
     }
     
     // Register the function
-    timer_events[timer_event_count].func = function;
+    timer_events[timer_event_count].function = function;
     timer_events[timer_event_count].interval = interval;
     timer_event_count++;
 }
@@ -130,7 +131,7 @@ void main(){
     while (1) {
         for (int i = 0; i < timer_event_count; i++) {
             if (timer_ticks % timer_events[i].interval == 0) {
-                timer_events[i].func();
+                timer_events[i].function();
             }
         }
     }
