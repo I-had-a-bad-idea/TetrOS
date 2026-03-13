@@ -1,9 +1,9 @@
 #pragma once
 
-#define ARRAY_AXIS_SIZE 4
+#define BLOCK_ARRAY_AXIS_SIZE 4
 
 struct Block {
-    bool cells[ARRAY_AXIS_SIZE][ARRAY_AXIS_SIZE] = {
+    bool cells[BLOCK_ARRAY_AXIS_SIZE][BLOCK_ARRAY_AXIS_SIZE] = {
         {0, 0, 0, 0},
         {0, 0, 0, 0},
         {0, 0, 0, 0},
@@ -13,10 +13,10 @@ struct Block {
 
 // Tetris Blocks (4x4 representation)
 Block I = {{
-    {0, 0, 0, 0},
-    {1, 1, 1, 1},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}
+    {0, 1, 0, 0},
+    {0, 1, 0, 0},
+    {0, 1, 0, 0},
+    {0, 1, 0, 0}
 }};
 
 Block O = {{
@@ -34,9 +34,9 @@ Block T = {{
 }};
 
 Block S = {{
-    {0, 0, 0, 0},
+    {0, 1, 0, 0},
     {0, 1, 1, 0},
-    {1, 1, 0, 0},
+    {0, 0, 1, 0},
     {0, 0, 0, 0}
 }};
 
@@ -49,14 +49,14 @@ Block Z = {{
 
 Block J = {{
     {0, 0, 0, 0},
-    {1, 0, 0, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0}
+    {0, 0, 1, 0},
+    {0, 0, 1, 0},
+    {0, 1, 1, 0}
 }};
 
 Block L = {{
     {0, 0, 0, 0},
-    {0, 0, 1, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0}
+    {0, 1, 0, 0},
+    {0, 1, 0, 0},
+    {0, 1, 1, 0}
 }};
