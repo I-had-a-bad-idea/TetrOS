@@ -5,8 +5,8 @@ bool block_active = false;
 Block current_block;
 
 void init_tetris() {
-    timer_register(tetris_step, 30);
-    timer_register(tetris_render, 30);
+    timer_register(tetris_step, 10);
+    timer_register(tetris_render, 5);
 
     // Init field
     for (int x = 0; x < FIELD_WIDTH; x++) {
@@ -56,6 +56,8 @@ void tetris_step() {
         }
         if (!can_move_down) break;
     }
+
+    // Move block down or place it if it cant move down
     if (can_move_down) {
         current_block.y++;
     } else {
@@ -73,13 +75,36 @@ void tetris_step() {
             }
         }
     }
+
+
+    // Delete full lines
+    for (int y = 0; y < FIELD_HEIGHT; y++) {
+        bool line_full = true;
+        for (int x = 0; x < FIELD_WIDTH; x++) {
+            if (field[x][y] == EMPTY_CHAR || field[x][y] == FALLING_BLOCK_CHAR) { // also check for falling block chars, since they are not actually placed yet
+                line_full = false;
+                break;
+            }
+        }
+        if (line_full) {
+            // Move all lines above down
+            for (int ty = y; ty > 0; ty--) {
+                for (int x = 0; x < FIELD_WIDTH; x++) {
+                    field[x][ty] = field[x][ty - 1];
+                }
+            }
+            // Clear top line
+            for (int x = 0; x < FIELD_WIDTH; x++) {
+                field[x][0] = EMPTY_CHAR;
+            }
+        }
+    }
 }
 
 void tetris_render() {
     reset_cursor();   // We dont need a full reset, since we overwrite it
 
-    //// Render field
-
+    // Render field
     for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
             char c = field[x][y];
@@ -107,7 +132,8 @@ void tetris_render() {
         }
     }
 
-    //// Render borders
+
+    // Render borders
 
     // Render left and right borders
     int x1 = 0;
