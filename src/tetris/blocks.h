@@ -5,6 +5,7 @@
 
 typedef struct {
     bool cells[BLOCK_ARRAY_AXIS_SIZE][BLOCK_ARRAY_AXIS_SIZE];
+    int x, y; // top-left corner of block in field coordinates
 } Block;
 
 extern Block I;

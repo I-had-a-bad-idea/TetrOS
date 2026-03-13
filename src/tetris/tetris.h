@@ -1,5 +1,7 @@
 #pragma once
 #include "kernel/kernel.h"
+#include "kernel/stdint.h"
+#include "tetris/blocks.h"
 
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
