@@ -16,6 +16,27 @@ void init_tetris() {
     }
 }
 
+bool can_move(Block block, int desired_x, int desired_y) {
+    for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+        for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+            if (block.cells[bx][by]) {
+                int field_x = desired_x + bx;
+                int field_y = desired_y + by;
+
+                // Check bounds
+                if (field_y >= FIELD_HEIGHT || field_x < 0 || field_x >= FIELD_WIDTH) {
+                    return false;
+                }
+                // Check collision with existing blocks
+                if (field[field_x][field_y] == BLOCK_CHAR) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 void tetris_step() {
     if (!block_active) {
         // Spawn new block
@@ -35,28 +56,8 @@ void tetris_step() {
     }
 
     //// Physics step
-    bool can_move_down = true;
-    for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
-        for (int by = BLOCK_ARRAY_AXIS_SIZE-1; by >= 0; by--) { // check from bottom to top, so we can break earlier if we find a collision
-            if (current_block.cells[bx][by]) {
-                int field_x = current_block.x + bx;
-                int field_y = current_block.y + by + 1; // Check one below
-
-                // Check bounds
-                if (field_y >= (FIELD_HEIGHT - 1) || field_x < 0 || field_x >= FIELD_WIDTH) {
-                    can_move_down = false;
-                    break;
-                }
-                // Check collision with existing blocks
-                if (field[field_x][field_y] == BLOCK_CHAR) { // cant do != EMPTY_CHAR since we want to allow falling blocks to move through each other
-                    can_move_down = false;
-                    break;
-                }
-            }
-        }
-        if (!can_move_down) break;
-    }
-
+    bool can_move_down = can_move(current_block, current_block.x, current_block.y + 1);
+    
     // Move block down or place it if it cant move down
     if (can_move_down) {
         current_block.y++;
