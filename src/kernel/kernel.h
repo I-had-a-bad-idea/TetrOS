@@ -8,7 +8,25 @@
 extern uint32_t random_seed;
 
 #define VIDEO_MEMORY 0xB8000
-#define WHITE_ON_BLACK 0x0F
+
+#define BLACK_ON_BLACK      0x00
+#define WHITE_ON_BLACK      0x0F
+#define BLACK_ON_WHITE      0xF0
+#define RED_ON_BLACK        0x04
+#define GREEN_ON_BLACK      0x02
+#define BLUE_ON_BLACK       0x01
+#define YELLOW_ON_BLACK     0x0E
+#define CYAN_ON_BLACK       0x0B
+#define MAGENTA_ON_BLACK    0x0D
+#define LIGHT_GRAY_ON_BLACK 0x07
+#define DARK_GRAY_ON_BLACK  0x08
+#define BLACK_ON_RED        0x40
+#define BLACK_ON_GREEN      0x20
+#define BLACK_ON_BLUE       0x10
+#define WHITE_ON_BLUE       0x1F
+#define YELLOW_ON_BLUE      0x1E
+#define WHITE_ON_WHITE      0xFF
+
 #define VIDEO_WIDTH 80
 #define VIDEO_HEIGHT 25
 
