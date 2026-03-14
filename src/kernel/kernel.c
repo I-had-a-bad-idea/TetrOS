@@ -40,7 +40,7 @@ void keyboard_irq(Registers* regs) {
     else { // release
         char c = keyboard_scancodes[scancode - 128];
         if (c && pressed_key == c) {
-            pressed_key = c;
+            pressed_key = 0;
         }
     }
 }
