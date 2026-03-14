@@ -43,6 +43,7 @@ void write_char(int x, int y, char c);
 
 int get_timer_ticks();
 float get_time();
+char get_pressed_key();
 
 uint32_t rand32();
 uint32_t rand_range(uint32_t min, uint32_t max);

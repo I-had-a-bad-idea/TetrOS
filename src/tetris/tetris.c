@@ -24,7 +24,7 @@ bool can_move(Block block, int desired_x, int desired_y) {
                 int field_y = desired_y + by;
 
                 // Check bounds
-                if (field_y >= FIELD_HEIGHT || field_x < 0 || field_x >= FIELD_WIDTH) {
+                if (field_y >= (FIELD_HEIGHT - 1) || field_x < 0 || field_x >= FIELD_WIDTH) {
                     return false;
                 }
                 // Check collision with existing blocks
@@ -55,9 +55,27 @@ void tetris_step() {
         block_active = true;
     }
 
+    //// Inputs
+    char key = get_pressed_key();
+    int desired_x = current_block.x;
+    int desired_y = current_block.y;
+    int desired_rotation = 0;
+    switch (key) {
+        case 'a': desired_x--; break; // left
+        case 'd': desired_x++; break; // right
+        case 's': desired_y++; break; // down
+        case 'q': desired_rotation = -1; break; // rotate left
+        case 'e': desired_rotation = 1; break; // rotate right
+    }
+
+    if (can_move(current_block, desired_x, desired_y)) {
+        current_block.x = desired_x;
+        current_block.y = desired_y;
+    }
+
     //// Physics step
-    bool can_move_down = can_move(current_block, current_block.x, current_block.y + 1);
-    
+    bool can_move_down = can_move(current_block, current_block.x, current_block.y + 1); 
+
     // Move block down or place it if it cant move down
     if (can_move_down) {
         current_block.y++;
