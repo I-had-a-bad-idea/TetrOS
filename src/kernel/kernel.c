@@ -17,7 +17,7 @@ char keyboard_scancodes[128] = {
 };
 
 uint16_t timer_event_count = 0;
-timer_event timer_events[MAX_TIMER_EVENTS] = {};
+timer_event timer_events[MAX_TIMER_EVENTS] = {0};
 char pressed_key = 0;
 unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 uint32_t cursor_position = 0;
@@ -156,7 +156,7 @@ void main(){
     print_string_literal("Starting tetris");
     init_tetris();
 
-    clear_screen();
+    // clear_screen();
 
     int last_timer_ticks = 0;
     while (1) {

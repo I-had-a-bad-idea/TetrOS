@@ -1,8 +1,8 @@
 #include "tetris.h"
 
-char field[FIELD_WIDTH][FIELD_HEIGHT] = {};
+char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
-Block current_block;
+ActiveBlock current_block = {0};
 
 void init_tetris() {
     timer_register(tetris_step, 10);
@@ -16,15 +16,15 @@ void init_tetris() {
     }
 }
 
-bool can_move(Block block, int desired_x, int desired_y) {
+bool can_move(Block* block, int desired_x, int desired_y) {
     for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
         for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-            if (block.cells[bx][by]) {
+            if (block->cells[bx][by]) {
                 int field_x = desired_x + bx;
                 int field_y = desired_y + by;
 
                 // Check bounds
-                if (field_y >= (FIELD_HEIGHT - 1) || field_x < 0 || field_x >= FIELD_WIDTH) {
+                if (field_y >= (FIELD_HEIGHT - 1) || field_y < 0|| field_x < 0 || field_x >= FIELD_WIDTH) {
                     return false;
                 }
                 // Check collision with existing blocks
@@ -42,13 +42,13 @@ void tetris_step() {
         // Spawn new block
         int block_type = rand_range(0, 6);
         switch (block_type) {
-            case 0: current_block = I; break;
-            case 1: current_block = O; break;
-            case 2: current_block = T; break;
-            case 3: current_block = S; break;
-            case 4: current_block = Z; break;
-            case 5: current_block = J; break;
-            case 6: current_block = L; break;
+            case 0: current_block.block = &I; break;
+            case 1: current_block.block = &O; break;
+            case 2: current_block.block = &T; break;
+            case 3: current_block.block = &S; break;
+            case 4: current_block.block = &Z; break;
+            case 5: current_block.block = &J; break;
+            case 6: current_block.block = &L; break;
         }
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
         current_block.y = 0;
@@ -68,13 +68,13 @@ void tetris_step() {
         case 'e': desired_rotation = 1; break; // rotate right
     }
 
-    if (can_move(current_block, desired_x, desired_y)) {
+    if (can_move(current_block.block, desired_x, desired_y)) {
         current_block.x = desired_x;
         current_block.y = desired_y;
     }
 
     //// Physics step
-    bool can_move_down = can_move(current_block, current_block.x, current_block.y + 1); 
+    bool can_move_down = can_move(current_block.block, current_block.x, current_block.y + 1); 
 
     // Move block down or place it if it cant move down
     if (can_move_down) {
@@ -84,7 +84,7 @@ void tetris_step() {
         // Place block in field
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                if (current_block.cells[bx][by]) {
+                if (current_block.block->cells[bx][by]) {
                     int field_x = current_block.x + bx;
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
@@ -138,7 +138,7 @@ void tetris_render() {
     if (block_active) {
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                if (current_block.cells[bx][by]) {
+                if (current_block.block->cells[bx][by]) {
                     int field_x = current_block.x + bx;
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
