@@ -25,7 +25,7 @@ bool can_move(Block* block, int desired_x, int desired_y) {
                 int field_y = desired_y + by;
 
                 // Check bounds
-                if (field_y >= (FIELD_HEIGHT - 1) || field_y < 0|| field_x < 0 || field_x >= FIELD_WIDTH) {
+                if (field_y >= FIELD_HEIGHT || field_y < 0|| field_x < 0 || field_x >= FIELD_WIDTH) {
                     return false;
                 }
                 // Check collision with existing blocks
@@ -130,7 +130,7 @@ void tetris_render() {
     if (game_over) {return;}
 
     // Render field
-    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
+    for (int y = 1; y <= FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
             char c = field[x][y];
 
@@ -169,7 +169,7 @@ void tetris_render() {
     }
     // Render top and bottom borders   
     int y1 = 0;
-    int y2 = FIELD_HEIGHT - 1;
+    int y2 = FIELD_HEIGHT;
     for (int x = 0; x < (FIELD_WIDTH + 1) * 2; x++) {
         write_char(x, y1, HORIZONTAL_BORDER_CHAR);
         write_char(x, y2, HORIZONTAL_BORDER_CHAR);
@@ -177,8 +177,9 @@ void tetris_render() {
 }
 
 void end_game() {
+    game_over = true;
     // Render field with all filled blocks
-    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
+    for (int y = 1; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
 
             int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
