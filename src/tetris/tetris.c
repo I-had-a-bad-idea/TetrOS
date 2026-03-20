@@ -2,6 +2,7 @@
 
 char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
+bool game_over = false;
 ActiveBlock current_block = {0};
 
 void init_tetris() {
@@ -38,6 +39,8 @@ bool can_move(Block* block, int desired_x, int desired_y) {
 }
 
 void tetris_step() {
+    if (game_over) {return;}
+
     if (!block_active) {
         // Spawn new block
         int block_type = rand_range(0, 6);
@@ -53,6 +56,9 @@ void tetris_step() {
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
         current_block.y = 0;
         block_active = true;
+        if (!can_move(current_block.block, current_block.x, current_block.y)) { // If block cannot be spawned
+            end_game();
+        }
     }
 
     //// Inputs
@@ -121,7 +127,7 @@ void tetris_step() {
 }
 
 void tetris_render() {
-    reset_cursor();   // We dont need a full reset, since we overwrite it
+    if (game_over) {return;}
 
     // Render field
     for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
@@ -167,5 +173,17 @@ void tetris_render() {
     for (int x = 0; x < (FIELD_WIDTH + 1) * 2; x++) {
         write_char(x, y1, HORIZONTAL_BORDER_CHAR);
         write_char(x, y2, HORIZONTAL_BORDER_CHAR);
+    }
+}
+
+void end_game() {
+    // Render field with all filled blocks
+    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
+        for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
+
+            int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
+            write_char(draw_x, y, BLOCK_CHAR); // first copy
+            write_char(draw_x + 1, y, BLOCK_CHAR);  // second copy
+        }
     }
 }
