@@ -57,6 +57,7 @@ void print_int(int n);
 
 void clear_screen();
 void reset_cursor();
+void set_cursor(int x, int y);
 void write_char(int x, int y, char c);
 
 int get_timer_ticks();

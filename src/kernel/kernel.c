@@ -112,6 +112,10 @@ void reset_cursor() {
     cursor_position = 0;
 }
 
+void set_cursor(int x, int y) {
+    cursor_position = y * VIDEO_WIDTH + x;
+}
+
 void write_char(int x, int y, char c) {
     video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
 }
