@@ -17,3 +17,4 @@ extern char field[FIELD_WIDTH][FIELD_HEIGHT];
 void init_tetris();
 void tetris_step();
 void tetris_render();
+void end_game();
