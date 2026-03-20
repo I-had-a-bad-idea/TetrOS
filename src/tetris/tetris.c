@@ -3,10 +3,11 @@
 char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
 ActiveBlock current_block = {0};
+int score = 0;
 
 void init_tetris() {
-    timer_register(tetris_step, 10);
-    timer_register(tetris_render, 5);
+    timer_register(tetris_step, TETRIS_STEP_TICKS);
+    timer_register(tetris_render, TETRIS_RENDER_TICKS);
 
     // Init field
     for (int x = 0; x < FIELD_WIDTH; x++) {
@@ -106,6 +107,7 @@ void tetris_step() {
             }
         }
         if (line_full) {
+            score += POINTS_PER_LINE;
             // Move all lines above down
             for (int ty = y; ty > 0; ty--) {
                 for (int x = 0; x < FIELD_WIDTH; x++) {
@@ -121,6 +123,7 @@ void tetris_step() {
 }
 
 void tetris_render() {
+    score += POINTS_PER_TICK * TETRIS_RENDER_TICKS;
     reset_cursor();   // We dont need a full reset, since we overwrite it
 
     // Render field
