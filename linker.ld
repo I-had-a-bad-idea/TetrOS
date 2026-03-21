@@ -1,3 +1,4 @@
+ENTRY(_start)
 
 SECTIONS
 {
@@ -6,7 +7,7 @@ SECTIONS
   	/* text section */
 	.text BLOCK(4K) : ALIGN(4K)
 	{
-		*(.multiboot)
+		*(.text.start) /* entry point */
 		*(.text)
 	}
 
@@ -28,5 +29,10 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+
+	. = ALIGN(16);
+	stack_top = .;
+	. += 64K; /* Way to much but cant hurt  */
+	stack_bottom = .;
 
 }
