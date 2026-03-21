@@ -12,10 +12,10 @@ typedef struct {
     int x, y; // top-left corner of block in field coordinates
 } ActiveBlock;
 
-extern Block I;
-extern Block O;
-extern Block T;
-extern Block S;
-extern Block Z;
-extern Block J;
-extern Block L;
+extern const Block I;
+extern const Block O;
+extern const Block T;
+extern const Block S;
+extern const Block Z;
+extern const Block J;
+extern const Block L;

@@ -1,49 +1,49 @@
 #include "tetris/blocks.h"
 
 // Tetris Blocks (4x4 representation)
-Block I = {{
+const Block I = {{
     {0, 1, 0, 0},
     {0, 1, 0, 0},
     {0, 1, 0, 0},
     {0, 1, 0, 0}
 }};
 
-Block O = {{
+const Block O = {{
     {0, 0, 0, 0},
     {0, 1, 1, 0},
     {0, 1, 1, 0},
     {0, 0, 0, 0}
 }};
 
-Block T = {{
+const Block T = {{
     {0, 0, 0, 0},
     {1, 1, 1, 0},
     {0, 1, 0, 0},
     {0, 0, 0, 0}
 }};
 
-Block S = {{
+const Block S = {{
     {0, 1, 0, 0},
     {0, 1, 1, 0},
     {0, 0, 1, 0},
     {0, 0, 0, 0}
 }};
 
-Block Z = {{
+const Block Z = {{
     {0, 0, 0, 0},
     {1, 1, 0, 0},
     {0, 1, 1, 0},
     {0, 0, 0, 0}
 }};
 
-Block J = {{
+const Block J = {{
     {0, 0, 0, 0},
     {0, 0, 1, 0},
     {0, 0, 1, 0},
     {0, 1, 1, 0}
 }};
 
-Block L = {{
+const Block L = {{
     {0, 0, 0, 0},
     {0, 1, 0, 0},
     {0, 1, 0, 0},

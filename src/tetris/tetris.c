@@ -163,7 +163,7 @@ void tetris_render() {
 
     // Render score 
     int score_x = (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
-    int score_y = 2;
+    int score_y = 20;
     set_cursor(score_x, score_y);
     print_string("Score:");
     print_int(score);
