@@ -6,6 +6,22 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 |---------|--------|
 | ![Playing Tetris](screenshots/playing.png) | ![Losing Tetris](screenshots/losing.png) |
 
+> The screenshots above are from an early version of TetrOS and may not reflect the current state of the project. The project is still in development, and features may change over time.
+
+## Overview
+
+- [TetrOS](#tetros)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Building](#building)
+  - [Running](#running)
+    - [Controls](#controls)
+  - [Troubleshooting](#troubleshooting)
+  - [License](#license)
+  - [Disclaimer](#disclaimer)
+
 ---
 
 ## Features
@@ -73,3 +89,7 @@ Feel free to open an issue, if any problems arise.
 
 ## License
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) for details.
+
+## Disclaimer
+**Tetros is inspired by the gameplay of Tetris but is entirely original.**    
+This project is **not affiliated with or endorsed by The Tetris Company**, and does **not use any official Tetris assets.**
