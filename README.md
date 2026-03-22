@@ -57,22 +57,22 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
    ```bash
    make -f Kernel.mk
    ```
-3. (Optionally) Build and run in VirtualBox: (this step loads TetrOS into a 1 MB floppy-disk image)
+3. (Optionally) Put into a disk image
    ```bash
-   make -f VirtualBox.mk
+   make -f DiskImage.mk
    ```
 4. All together:
    ```bash
    make -f Assembly.mk
    make -f Kernel.mk
-   make -f VirtualBox.mk
+   make -f DiskImage.mk
    ```
 
 ## Running
 The build process creates a bootable image `TetrOS.bin`
 You can boot this image in a VM-Software (VirtualBox, QEMU, etc.) or write it to a USB drive for real hardware (use with caution, not tested).
 
-In case of VirtualBox use the `disk.img` disk image
+In case of VirtualBox use the `TetrOS.img` disk image
 
 ### Controls
 - A: Move block left
