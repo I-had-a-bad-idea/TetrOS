@@ -2,13 +2,19 @@
 
 TetrOS is a simple, educational OS that boots directly on x86 hardware or in a virtual machine and runs a playable version of Tetris.
 
+| Playing | Game over |
+|---------|--------|
+| ![Playing Tetris](screenshots/playing.png) | ![Losing Tetris](screenshots/losing.png) |
+
 ---
 
 ## Features
 
-- Custom bootloader written in Assembly
+- Custom bootloader written in Assembly (16-bit real mode -> 32-bit protected mode)
 - 32-bit protected mode kernel
+- CPU exception handling
 - Keyboard input handling
+- Timer handling
 - Text-mode graphics (VGA)
 - Timer interrupts and event system
 - Fully playable Tetris game
@@ -21,7 +27,7 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 ### Prerequisites
 
 - **NASM** (Netwide Assembler)
-- **i686-elf-gcc** (cross-compiler for 32-bit x86, or similar)
+- **a cross compiler** (e.g. i686-elf-gcc)
 - **Make** (GNU Make)
 - **VirtualBox** or **QEMU** (for emulation/testing)
 
@@ -49,6 +55,8 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 ## Running
 The build process creates a bootable image `TetrOS.bin`
 You can boot this image in a VM-Software (VirtualBox, QEMU, etc.) or write it to a USB drive for real hardware (use with caution, not tested).
+
+In case of VirtualBox use the `disk.img` disk image
 
 ### Controls
 - A: Move block left
