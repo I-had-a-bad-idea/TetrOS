@@ -1,7 +1,7 @@
 #include "kernel.h"
 #include "tetris/tetris.h"
 
-char keyboard_scancodes[128] = {
+const char keyboard_scancodes[128] = {
 0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b',
 '\t',
 'q','w','e','r','t','y','u','i','o','p','[',']','\n',
@@ -18,10 +18,10 @@ char keyboard_scancodes[128] = {
 
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
-char pressed_key = 0;
+static char pressed_key = 0;
 uint32_t cursor_position = 0;
 
-uint32_t seed = 1234567890;
+uint32_t random_seed = 1234567890;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
@@ -135,10 +135,10 @@ void timer_register(func function, uint32_t interval) {
 
 // Xorshift RNG
 uint32_t rand32() {
-    seed ^= seed << 13;
-    seed ^= seed >> 17;
-    seed ^= seed << 5;
-    return seed;
+    random_seed ^= random_seed << 13;
+    random_seed ^= random_seed >> 17;
+    random_seed ^= random_seed << 5;
+    return random_seed;
 }
 
 uint32_t rand_range(uint32_t min, uint32_t max) {
