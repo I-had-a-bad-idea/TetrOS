@@ -4,6 +4,7 @@ char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
+Block rotated_block = {0};
 int score = 0;
 
 void init_tetris() {
@@ -14,6 +15,20 @@ void init_tetris() {
     for (int x = 0; x < FIELD_WIDTH; x++) {
         for (int y = 0; y < FIELD_HEIGHT; y++) {
             field[x][y] = EMPTY_CHAR;
+        }
+    }
+}
+
+void rotate_block(Block* src, Block* dst, int direction) {
+    // direction = 1 for clockwise, -1 for counter-clockwise
+    for (int x = 0; x < BLOCK_ARRAY_AXIS_SIZE; x++) {
+        for (int y = 0; y < BLOCK_ARRAY_AXIS_SIZE; y++) {
+            
+            if (direction == 1) { //clockwise
+                dst->cells[x][y] = src->cells[BLOCK_ARRAY_AXIS_SIZE - 1 - y][x];
+            } else { // counter-clockwise
+                dst->cells[x][y] = src->cells[y][BLOCK_ARRAY_AXIS_SIZE - 1 - x];
+            }
         }
     }
 }
@@ -71,10 +86,20 @@ void tetris_step() {
         case 'a': desired_x--; break; // left
         case 'd': desired_x++; break; // right
         case 's': desired_y++; break; // down
-        case 'q': desired_rotation = -1; break; // rotate left
-        case 'e': desired_rotation = 1; break; // rotate right
+        case 'q': desired_rotation = 1; break; // rotate left
+        case 'e': desired_rotation = -1; break; // rotate right
+    }
+    // Rotation
+    if (desired_rotation != 0) {
+        rotate_block(current_block.block, &rotated_block, desired_rotation);
+        // Check if block can be rotated
+        if (can_move(&rotated_block, current_block.x, current_block.y)) {
+            // Apply rotation
+            *current_block.block = rotated_block;
+        }
     }
 
+    // Movement
     if (can_move(current_block.block, desired_x, desired_y)) {
         current_block.x = desired_x;
         current_block.y = desired_y;
