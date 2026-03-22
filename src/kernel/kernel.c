@@ -87,7 +87,7 @@ void print_int(int n) {
     }
 
     // Hanle actual number
-    char buffer[10];
+    char buffer[12];
     int i = 0;
 
     while (n > 0) {
@@ -146,20 +146,20 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
 }
 
 void main(){
-    print_string_literal("Kernel started!\nSetting up the IDT...\n");
+    print_string("Kernel started!\nSetting up the IDT...\n");
     init_idt();
-    print_string_literal("IDT-setup successful!\nSetting up the ISR...\n");
+    print_string("IDT-setup successful!\nSetting up the ISR...\n");
     init_isr();
-    print_string_literal("ISR-setup successful!\nSetting up the PICs...\n");
+    print_string("ISR-setup successful!\nSetting up the PICs...\n");
     init_irq();
-    print_string_literal("PICs setup successfull!\n");
+    print_string("PICs setup successfull!\n");
 
     // Register timer handler and enable interrupt 0
     irq_register_handler_and_unmask(0, timer_irq);
     // Register keyboard handler and enable interrupt 1
     irq_register_handler_and_unmask(1, keyboard_irq);
 
-    print_string_literal("Starting tetris");
+    print_string("Starting tetris");
     init_tetris();
 
     // clear_screen();

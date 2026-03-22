@@ -46,10 +46,7 @@ extern uint16_t timer_event_count;
 
 extern uint32_t cursor_position;
 
-#define print_string_literal(str) do { \
-    char _tmp[] = str; \
-    print_string(_tmp); \
-} while(0)
+
 
 void print_char(char c);
 void print_string(const char* str);

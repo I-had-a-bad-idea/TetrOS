@@ -9,9 +9,9 @@ void __attribute__((cdecl)) irq_handler(Registers* regs) {
     if (irq_handlers[irq] != 0) {
         irq_handlers[irq](regs); // Handle IRQ
     } else {
-        print_string_literal("Unhandled Irq:  ");
+        print_string("Unhandled Irq:  ");
         print_int(irq);
-        print_string_literal("\n");
+        print_string("\n");
     }
 
     // Send EOI
@@ -19,7 +19,7 @@ void __attribute__((cdecl)) irq_handler(Registers* regs) {
 }
 
 void init_irq() {
-    print_string_literal("Initializing PIC ISR handlers...\n");
+    print_string("Initializing PIC ISR handlers...\n");
     PIC_remap(PIC_REMAP_OFFSET, PIC_REMAP_OFFSET + 8);
 
     for (int i = 0; i < 16; i++) {

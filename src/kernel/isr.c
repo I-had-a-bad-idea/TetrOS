@@ -42,7 +42,7 @@ static const char* const exceptions[] = {
 void isr_initialize_gates(void);
 
 void init_isr() {
-    print_string_literal("Initializing ISRs and IDT gates...\n");
+    print_string("Initializing ISRs and IDT gates...\n");
     isr_initialize_gates();
 }
 
@@ -51,11 +51,11 @@ void __attribute__((cdecl)) isr_handler(Registers* regs) {
         isr_handlers[regs->interrupt_number](regs);
     }
     else {
-        print_string_literal("Unhandled expection:  ");
+        print_string("Unhandled expection:  ");
         print_int(regs->interrupt_number);
-        print_string_literal("\n");
+        print_string("\n");
         print_string(exceptions[regs->interrupt_number]);
-        print_string_literal("\n");
+        print_string("\n");
 
         for (;;){
             asm volatile("hlt");
