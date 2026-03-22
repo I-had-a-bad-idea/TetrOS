@@ -1,29 +1,67 @@
 # TetrOS
-A simple OS to run Tetris
 
-## Installation
-You will need to install NASM, a cross-compiler and some VM to use this.
+TetrOS is a simple, educational OS that boots directly on x86 hardware or in a virtual machine and runs a playable version of Tetris.
 
-Then use the Makefiles:
+---
 
-```bash
-make -f Assembly.mk
+## Features
 
-make -f Kernel.mk
-```
+- Custom bootloader written in Assembly
+- 32-bit protected mode kernel
+- Keyboard input handling
+- Text-mode graphics (VGA)
+- Timer interrupts and event system
+- Fully playable Tetris game
+- Runs on real hardware or in VirtualBox/QEMU
 
-For VirtualBox:
-```bash
-make -f VirtualBox.mk
-```
+---
 
-All together:
+## Getting Started
 
-```bash
-make -f Assembly.mk
-make -f Kernel.mk
-make -f VirtualBox.mk
-```
+### Prerequisites
 
-## Notes for myself
-If stuff is broken with no reason: Try increasing the loaded sectors in `boot.asm`
+- **NASM** (Netwide Assembler)
+- **i686-elf-gcc** (cross-compiler for 32-bit x86, or similar)
+- **Make** (GNU Make)
+- **VirtualBox** or **QEMU** (for emulation/testing)
+
+### Building
+
+1. **Assemble the bootloader:**
+   ```bash
+   make -f Assembly.mk
+   ```
+2. Build the kernl:
+   ```bash
+   make -f Kernel.mk
+   ```
+3. (Optionally) Build and run in VirtualBox: (this step loads TetrOS into a 1 MB floppy-disk image)
+   ```bash
+   make -f VirtualBox.mk
+   ```
+4. All together:
+   ```bash
+   make -f Assembly.mk
+   make -f Kernel.mk
+   make -f VirtualBox.mk
+   ```
+
+## Running
+The build process creates a bootable image `TetrOS.bin`
+You can boot this image in a VM-Software (VirtualBox, QEMU, etc.) or write it to a USB drive for real hardware (use with caution, not tested).
+
+### Controls
+- A: Move block left
+- D: Move block right
+- S: Move block down
+- Q: Rotate block left
+- E: Rotate block right
+
+## Troubleshooting
+- If the OS fails to boot or hangs: Try increasing the loaded sectors in `boot.asm` (see the `mov dh, ...` line).
+- If only a white `A` appears on screen the calling of the kernel main function failed
+
+Feel free to open an issue, if any problems arise.
+
+## License
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) for details.
