@@ -162,7 +162,7 @@ void main(){
     print_string("Starting tetris");
     init_tetris();
 
-    // clear_screen();
+    clear_screen();
 
     int last_timer_ticks = 0;
     while (1) {
