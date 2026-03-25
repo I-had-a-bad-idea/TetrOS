@@ -51,7 +51,7 @@ mov ah, 0x02         ; read floppy/hard disk in CHS mode
 mov al, dh           ; number of sectors to read
 mov ch, 0x00         ; cylinder number = 0
 mov dh, 0x00         ; head number = 0
-mov cl, 0x8           ; sector number = 8 (sector 1 is stage1 and sections 2-7 is stage2 )
+mov cl, 0x7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
 ; dl already contains drive number
 int 0x13             ; read from disk
 ; error management
@@ -168,7 +168,11 @@ start_protected_mode:
     mov fs, ax  ; set fs
     mov gs, ax  ; set gs
 
-    mov ebp, 0x90000  ; set 32 bit stack pointer
+    mov ebp, 0x200000  ; set 32 bit stack pointer
     mov esp, ebp      ; init 32 bit stack
 
     jmp KERNEL_LOCATION  ; jump to loaded kernel
+
+
+
+times (5 * 512) - ($ - $$) db 0  ; use exactly 5 sectors (so loading the kernel works)
