@@ -3,28 +3,10 @@
 
 KERNEL_LOCATION equ 0x1000 ; set kernel memory address
 FRAMEBUFFER_INFO_LOCATION equ 0x9000
-      
-mov [BOOT_DISK], dl        ; save drive number         
+
 xor ax, ax                 ; ax = 0     
 mov es, ax                 ; es = 0
 mov ds, ax                 ; ds = 0
-
-
-; Load kernel from disk
-mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
-
-mov ah, 0x02         ; read floppy/hard disk in CHS mode
-mov al, 40           ; number of sectors to read (currently reads too much to avoid future problems)
-mov ch, 0         ; cylinder number = 0
-mov dh, 0         ; head number = 0
-mov cl, 7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
-; dl already contains drive number
-int 0x13             ; read from disk
-; error management
-jc disk_error        ; jmp to disk_error if cf is 1 (error)
-
-disk_sucess:        ; if sucess continue
-        
 
 ; VBE setup
 mov ax, 0x4F00 ; get controller info
@@ -41,7 +23,6 @@ int 0x10
 cmp ax, 0x004F
 jne vbe_fail 
 
-
 ; set the mode
 mov ax, 0x4F02
 mov bx, 0x4118 ; 0x4000 = linear framebuffer
@@ -49,18 +30,33 @@ int 0x10
 cmp ax, 0x004F
 jne vbe_fail
 
-
 ; store the vbe mode info
 mov ax, [vbe_mode_info_block + 26] ; pitch
-mov [FRAMEBUFFER_INFO_LOCATION + 4], ax
-mov ax, [vbe_mode_info_block + 18] ; width
 mov [FRAMEBUFFER_INFO_LOCATION + 0], ax
-mov ax, [vbe_mode_info_block + 20] ; height
+mov ax, [vbe_mode_info_block + 18] ; width
 mov [FRAMEBUFFER_INFO_LOCATION + 2], ax
+mov ax, [vbe_mode_info_block + 20] ; height
+mov [FRAMEBUFFER_INFO_LOCATION + 4], ax
 mov eax, [vbe_mode_info_block + 28] ; framebuffer addr
 mov [FRAMEBUFFER_INFO_LOCATION + 8], eax
 mov al, [vbe_mode_info_block + 25] ; bpp (color depth)
 mov [FRAMEBUFFER_INFO_LOCATION + 12], al
+
+
+; Load kernel from disk
+mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
+mov dh, 40    ; number of sectors to read (currently reads too much to avoid future problems)
+
+mov ah, 0x02         ; read floppy/hard disk in CHS mode
+mov al, dh           ; number of sectors to read
+mov ch, 0x00         ; cylinder number = 0
+mov dh, 0x00         ; head number = 0
+mov cl, 0x8           ; sector number = 8 (sector 1 is stage1 and sections 2-7 is stage2 )
+; dl already contains drive number
+int 0x13             ; read from disk
+; error management
+jc disk_error        ; jmp to disk_error if cf is 1 (error)
+
 
 ; GDT
 cli ; disable all interrupts
@@ -102,9 +98,11 @@ vbe_fail:
     call print_string            ; call print (prints si (the error msg))
     jmp $                        ; halt execution
 
+disk_error:
+    mov si, disk_read_error_msg  ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
 
-BOOT_DISK:
-    db 0
 
 
 ; Global-Descriptor-Table 
@@ -163,7 +161,6 @@ vbe_info_block:
 
 vbe_mode_info_block:
     times 256 db 0
-
 
 ; 32 bit protected mode
 [bits 32]
