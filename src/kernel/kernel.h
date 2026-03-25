@@ -18,8 +18,8 @@ typedef struct {
 #define FRAMEBUFFER_INFO_LOCATION 0x9000 // see also bootloader/boot.asm
 
 
-framebuffer_t* fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
-uint32_t* framebuffer;
+extern framebuffer_t* fb;
+extern uint8_t* framebuffer;
 
 
 #define BLACK 0x000000

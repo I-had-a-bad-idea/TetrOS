@@ -16,6 +16,10 @@ const char keyboard_scancodes[128] = {
 ' ',
 };
 
+
+framebuffer_t* fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
+uint8_t* framebuffer;
+
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
 static char pressed_key = 0;
@@ -59,13 +63,33 @@ char get_pressed_key() {
 
 
 void init_graphics() {
-    framebuffer = (uint32_t*)fb->address;
+    framebuffer = (uint8_t*)fb->address;
 }
 
 
 void put_pixel(int x, int y, uint32_t color) {
-    uint32_t* pixel = (uint32_t*)((uint8_t*)framebuffer + y * fb->pitch + x * 4);
-    *pixel = color;
+    uint8_t* pixel = framebuffer + y * fb->pitch;
+
+    switch (fb->bpp) {
+        case 16: {
+            uint16_t c16 = ((color >> 16) & 0x1F) << 11  // R
+                          | ((color >> 8) & 0x3F) << 5   // G
+                          | ((color >> 3) & 0x1F);       // B
+            ((uint16_t*)pixel)[x] = c16;
+            break;
+        }
+        case 24: {
+            pixel += x * 3;
+            pixel[0] = color & 0xFF;        // Blue
+            pixel[1] = (color >> 8) & 0xFF; // Green
+            pixel[2] = (color >> 16) & 0xFF; // Red
+            break;
+        }
+        case 32: {
+            ((uint32_t*)pixel)[x] = color;
+            break;
+        }
+    }
 }
 
 
@@ -79,14 +103,6 @@ void fill_screen(uint32_t color) {
 
 void print_char(char c) {
     return;
-    // unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
-    // if (c == '\n') {
-    //     // move to next line
-    //     cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
-    // } else {
-    //     video_memory[cursor_position++] = (WHITE_ON_BLACK << 8) | c;
-    // }
 }
 
 void print_string(const char* str) {
@@ -124,12 +140,6 @@ void print_int(int n) {
 
 void clear_screen() {
     fill_screen(BLACK);
-    // unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
-    // for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
-    //     video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
-    // }
-    // cursor_position = 0;
 }
 
 void reset_cursor() {
@@ -137,12 +147,11 @@ void reset_cursor() {
 }
 
 void set_cursor(int x, int y) {
-    cursor_position = y * VIDEO_WIDTH + x;
+    return;
 }
 
 void write_char(int x, int y, char c) {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
+    return;
 }
 
 void timer_register(func function, uint32_t interval) {
@@ -171,44 +180,46 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
 void main(){
     init_graphics();
     clear_screen();
-    for (int i = 0; i < 200; i++) {
-        put_pixel(100 + i, 100, RED); // red line
-    }
-
-    return;
-    print_string("Kernel started!\nSetting up the IDT...\n");
-    init_idt();
-    print_string("IDT-setup successful!\nSetting up the ISR...\n");
-    init_isr();
-    print_string("ISR-setup successful!\nSetting up the PICs...\n");
-    init_irq();
-    print_string("PICs setup successfull!\n");
-
-    // Register timer handler and enable interrupt 0
-    irq_register_handler_and_unmask(0, timer_irq);
-    // Register keyboard handler and enable interrupt 1
-    irq_register_handler_and_unmask(1, keyboard_irq);
-
-    print_string("Starting tetris");
-    init_tetris();
-
-    clear_screen();
-
-    int last_timer_ticks = 0;
-    while (1) {
-        if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
-            reset_cursor();
-        }
-        if (timer_ticks == last_timer_ticks) {
-            continue;
-        }
-        last_timer_ticks = timer_ticks;
-        for (int i = 0; i < timer_event_count; i++) {
-            if (timer_ticks % timer_events[i].interval == 0) {
-                timer_events[i].function();
-            }
+    for (int x = 0; x < fb->width / 2; x++) {
+        for (int y = 0; y < fb->height / 2; y++) {
+            put_pixel(x, y, RED); // fill bottom right corner red
         }
     }
 
     return;
+    // print_string("Kernel started!\nSetting up the IDT...\n");
+    // init_idt();
+    // print_string("IDT-setup successful!\nSetting up the ISR...\n");
+    // init_isr();
+    // print_string("ISR-setup successful!\nSetting up the PICs...\n");
+    // init_irq();
+    // print_string("PICs setup successfull!\n");
+
+    // // Register timer handler and enable interrupt 0
+    // irq_register_handler_and_unmask(0, timer_irq);
+    // // Register keyboard handler and enable interrupt 1
+    // irq_register_handler_and_unmask(1, keyboard_irq);
+
+    // print_string("Starting tetris");
+    // init_tetris();
+
+    // clear_screen();
+
+    // int last_timer_ticks = 0;
+    // while (1) {
+    //     // if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
+    //         // reset_cursor();
+    //     // }
+    //     if (timer_ticks == last_timer_ticks) {
+    //         continue;
+    //     }
+    //     last_timer_ticks = timer_ticks;
+    //     for (int i = 0; i < timer_event_count; i++) {
+    //         if (timer_ticks % timer_events[i].interval == 0) {
+    //             timer_events[i].function();
+    //         }
+    //     }
+    // }
+
+    // return;
 }
