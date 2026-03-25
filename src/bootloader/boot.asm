@@ -37,16 +37,16 @@ disk_sucess:        ; if sucess continue
 ; VBE setup
 mov ax, 0x4F00 ; get controller info
 mov di, vbe_info_block
-int 0xq0
+int 0x10
 cmp ax, 0x004F
 jne vbe_fail
 
 ; get a mode (hardcoded) # TODO: dont hardcode this
 mov ax, 0x4F01
-mov cx, 0x118
-mov di vbe_mode_info_block
+mov cx, 0x118 ; 1024*768*24
+mov di, vbe_mode_info_block
 int 0x10
-cmp ax, 0x00F
+cmp ax, 0x004F
 jne vbe_fail 
 
 
@@ -65,9 +65,9 @@ mov ax, [vbe_mode_info_block + 18] ; width
 mov [FRAMEBUFFER_INFO_LOCATION + 0], ax
 mov ax, [vbe_mode_info_block + 20] ; height
 mov [FRAMEBUFFER_INFO_LOCATION + 2], ax
-mvo eax, [vbe_mode_info_block + 28] ; framebuffer addr
+mov eax, [vbe_mode_info_block + 28] ; framebuffer addr
 mov [FRAMEBUFFER_INFO_LOCATION + 8], eax
-mov al [vbe_mode_info_block + 25] ; bpp (color depth)
+mov al, [vbe_mode_info_block + 25] ; bpp (color depth)
 mov [FRAMEBUFFER_INFO_LOCATION + 12], al
 
 CODE_SEG equ GDT_code - GDT_start ; offset of descriptor
