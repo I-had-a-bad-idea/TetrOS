@@ -1,7 +1,10 @@
-all: binaries/boot.bin binaries/zeroes.bin binaries/kernel_entry.o binaries/isr.o binaries/io.o
+all: binaries/boot_stage_1.bin binaries/boot_stage_2.bin binaries/zeroes.bin binaries/kernel_entry.o binaries/isr.o binaries/io.o
 
-binaries/boot.bin:
-	nasm src/bootloader/boot.asm -f bin -o binaries/boot.bin
+binaries/boot_stage_1.bin:
+	nasm src/bootloader/boot_stage_1.asm -f bin -o binaries/boot_stage_1.bin
+
+binaries/boot_stage_2.bin:
+	nasm src/bootloader/boot_stage_2.asm -f bin -o binaries/boot_stage_2.bin
 
 binaries/zeroes.bin:
 	nasm src/bootloader/zeroes.asm -f bin -o binaries/zeroes.bin
