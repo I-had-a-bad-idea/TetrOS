@@ -7,28 +7,23 @@
 
 extern uint32_t random_seed;
 
-#define VIDEO_MEMORY 0xB8000
+typedef struct {
+    uint16_t pitch;
+    uint16_t width;
+    uint16_t height;
+    uint32_t address;
+    uint8_t bpp;
+} framebuffer_t;
 
-#define BLACK_ON_BLACK      0x00
-#define WHITE_ON_BLACK      0x0F
-#define BLACK_ON_WHITE      0xF0
-#define RED_ON_BLACK        0x04
-#define GREEN_ON_BLACK      0x02
-#define BLUE_ON_BLACK       0x01
-#define YELLOW_ON_BLACK     0x0E
-#define CYAN_ON_BLACK       0x0B
-#define MAGENTA_ON_BLACK    0x0D
-#define LIGHT_GRAY_ON_BLACK 0x07
-#define DARK_GRAY_ON_BLACK  0x08
-#define BLACK_ON_RED        0x40
-#define BLACK_ON_GREEN      0x20
-#define BLACK_ON_BLUE       0x10
-#define WHITE_ON_BLUE       0x1F
-#define YELLOW_ON_BLUE      0x1E
-#define WHITE_ON_WHITE      0xFF
+#define FRAMEBUFFER_INFO_LOCATION 0x9000 // see also bootloader/boot.asm
 
-#define VIDEO_WIDTH 80
-#define VIDEO_HEIGHT 25
+
+framebuffer_t* fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
+uint32_t* framebuffer;
+
+
+#define BLACK 0x000000
+#define RED 0xFF0000
 
 #define TIMER_SECONDS_PER_TICK 1
 

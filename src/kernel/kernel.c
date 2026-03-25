@@ -57,15 +57,36 @@ char get_pressed_key() {
     return pressed_key;
 }
 
-void print_char(char c) {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
-    if (c == '\n') {
-        // move to next line
-        cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
-    } else {
-        video_memory[cursor_position++] = (WHITE_ON_BLACK << 8) | c;
+void init_graphics() {
+    framebuffer = (uint32_t*)fb->address;
+}
+
+
+void put_pixel(int x, int y, uint32_t color) {
+    uint32_t* pixel = (uint32_t*)((uint8_t*)framebuffer + y * fb->pitch + x * 4);
+    *pixel = color;
+}
+
+
+void fill_screen(uint32_t color) {
+    for (int y = 0; y < fb->height; y++) {
+        for (int x = 0; x < fb->width; x++) {
+            put_pixel(x, y, color);
+        }
     }
+}
+
+void print_char(char c) {
+    return;
+    // unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+
+    // if (c == '\n') {
+    //     // move to next line
+    //     cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
+    // } else {
+    //     video_memory[cursor_position++] = (WHITE_ON_BLACK << 8) | c;
+    // }
 }
 
 void print_string(const char* str) {
@@ -75,38 +96,40 @@ void print_string(const char* str) {
 }
 
 void print_int(int n) {
-    if (n == 0) {
-        print_char('0');
-        return;
-    }
+    return;
+    // if (n == 0) {
+    //     print_char('0');
+    //     return;
+    // }
 
-    // Handle negative numbers
-    if (n < 0) {
-        print_char('-');
-        n = -n;
-    }
+    // // Handle negative numbers
+    // if (n < 0) {
+    //     print_char('-');
+    //     n = -n;
+    // }
 
-    // Hanle actual number
-    char buffer[12];
-    int i = 0;
+    // // Hanle actual number
+    // char buffer[12];
+    // int i = 0;
 
-    while (n > 0) {
-        buffer[i++] = '0' + (n % 10);
-        n /= 10;
-    }
+    // while (n > 0) {
+    //     buffer[i++] = '0' + (n % 10);
+    //     n /= 10;
+    // }
 
-    for (int j = i - 1; j >= 0; j--){
-        print_char(buffer[j]);
-    }
+    // for (int j = i - 1; j >= 0; j--){
+    //     print_char(buffer[j]);
+    // }
 }
 
 void clear_screen() {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    fill_screen(BLACK);
+    // unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
-    for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
-        video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
-    }
-    cursor_position = 0;
+    // for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
+    //     video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
+    // }
+    // cursor_position = 0;
 }
 
 void reset_cursor() {
@@ -146,6 +169,13 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
 }
 
 void main(){
+    init_graphics();
+    clear_screen();
+    for (int i = 0; i < 200; i++) {
+        put_pixel(100 + i, 100, RED); // red line
+    }
+
+    return;
     print_string("Kernel started!\nSetting up the IDT...\n");
     init_idt();
     print_string("IDT-setup successful!\nSetting up the ISR...\n");
