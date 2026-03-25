@@ -1,5 +1,7 @@
 [org 0x7c00] ; set origin to offset
 KERNEL_LOCATION equ 0x1000 ; set kernel memory address
+
+FRAMEBUFFER_INFO_LOCATION equ 0x9000
       
 mov [BOOT_DISK], dl        ; save drive number         
 xor ax, ax                 ; ax = 0     
@@ -31,10 +33,42 @@ disk_error:
 
 disk_sucess:        ; if sucess continue
         
-                                    
-mov ah, 0x0          ; set video mode
-mov al, 0x3          ; set to text mode
-int 0x10             ; call interrupt
+
+; VBE setup
+mov ax, 0x4F00 ; get controller info
+mov di, vbe_info_block
+int 0xq0
+cmp ax, 0x004F
+jne vbe_fail
+
+; get a mode (hardcoded) # TODO: dont hardcode this
+mov ax, 0x4F01
+mov cx, 0x118
+mov di vbe_mode_info_block
+int 0x10
+cmp ax, 0x00F
+jne vbe_fail 
+
+
+; set the mode
+mov ax, 0x4F02
+mov bx, 0x4118 ; 0x4000 = linear framebuffer
+int 0x10
+cmp ax, 0x004F
+jne vbe_fail
+
+
+; store the vbe mode info
+mov ax, [vbe_mode_info_block + 26] ; pitch
+mov [FRAMEBUFFER_INFO_LOCATION + 4], ax
+mov ax, [vbe_mode_info_block + 18] ; width
+mov [FRAMEBUFFER_INFO_LOCATION + 0], ax
+mov ax, [vbe_mode_info_block + 20] ; height
+mov [FRAMEBUFFER_INFO_LOCATION + 2], ax
+mvo eax, [vbe_mode_info_block + 28] ; framebuffer addr
+mov [FRAMEBUFFER_INFO_LOCATION + 8], eax
+mov al [vbe_mode_info_block + 25] ; bpp (color depth)
+mov [FRAMEBUFFER_INFO_LOCATION + 12], al
 
 CODE_SEG equ GDT_code - GDT_start ; offset of descriptor
 DATA_SEG equ GDT_data - GDT_start ; offset of descriptor
@@ -65,6 +99,15 @@ print_string_end:
 
 disk_read_error_msg:
     db "Reading disk failed!", 0
+
+vbe_fail_error_msg:
+    db "Setting up VBE failed!", 0
+
+vbe_fail:
+    mov si, vbe_fail_error_msg   ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
+
 
 BOOT_DISK:
     db 0
@@ -117,8 +160,15 @@ GDT_descriptor:
     dd GDT_start               ; start of GDT (base address)
 
 
-; 32 bit protected mode
+; VBE stuff
+vbe_info_block:
+    times 512 db 0
 
+vbe_mode_info_block:
+    times 256 db 0
+
+
+; 32 bit protected mode
 [bits 32]
 start_protected_mode:
     ; flat memory model
