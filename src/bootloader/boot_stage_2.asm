@@ -168,7 +168,7 @@ start_protected_mode:
     mov fs, ax  ; set fs
     mov gs, ax  ; set gs
 
-    mov ebp, 0x200000  ; set 32 bit stack pointer
+    mov ebp, 0x90000  ; set 32 bit stack pointer
     mov esp, ebp      ; init 32 bit stack
 
     jmp KERNEL_LOCATION  ; jump to loaded kernel
