@@ -1,16 +1,15 @@
-[org 0x7c00] ; set origin to offset
+[org 0x8000] ; set origin to offset
+[bits 16]
+
 KERNEL_LOCATION equ 0x1000 ; set kernel memory address
-      
-mov [BOOT_DISK], dl        ; save drive number         
+FRAMEBUFFER_INFO_LOCATION equ 0x9000
+
 xor ax, ax                 ; ax = 0     
 mov es, ax                 ; es = 0
 mov ds, ax                 ; ds = 0
 
-mov bp, 0x8000             ; set base pointer
-mov sp, bp                 ; set stack pointer 
 
-
-; load kernel from disk
+; Load kernel from disk
 mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
 mov dh, 40    ; number of sectors to read (currently reads too much to avoid future problems)
 
@@ -18,38 +17,30 @@ mov ah, 0x02         ; read floppy/hard disk in CHS mode
 mov al, dh           ; number of sectors to read
 mov ch, 0x00         ; cylinder number = 0
 mov dh, 0x00         ; head number = 0
-mov cl, 0x02         ; sector number = 2 (sector 1 is bootloader)
-mov dl, [BOOT_DISK]  ; drive number
+mov cl, 0x7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
+; dl already contains drive number
 int 0x13             ; read from disk
 ; error management
 jc disk_error        ; jmp to disk_error if cf is 1 (error)
-jmp disk_sucess      ; jmp to disk_success if no error
-disk_error:
-    mov si, disk_read_error_msg  ; set error message
-    call print_string            ; call print (prints si (the error msg))
-    jmp $                        ; halt execution
 
-disk_sucess:        ; if sucess continue
-        
-                                    
+
+; Video mode
 mov ah, 0x0          ; set video mode
 mov al, 0x3          ; set to text mode
 int 0x10             ; call interrupt
 
-CODE_SEG equ GDT_code - GDT_start ; offset of descriptor
-DATA_SEG equ GDT_data - GDT_start ; offset of descriptor
-
+; GDT
 cli ; disable all interrupts
 lgdt [GDT_descriptor] ; load GDT
 
-
-; change to 32 bit protected mode
+; Change to 32 bit protected mode
 mov eax, cr0 ; move cr0 into eax
 or eax, 1 ; change last bit (enable)
 mov cr0, eax ; move eax back to cr0
 jmp CODE_SEG:start_protected_mode ; jmp to code segment (far jump)
 
-jmp $
+
+; Error handling
 
 ; prints a string stored in ds:si (only works in real-mode )
 print_string:
@@ -66,10 +57,15 @@ print_string_end:
 disk_read_error_msg:
     db "Reading disk failed!", 0
 
-BOOT_DISK:
-    db 0
+disk_error:
+    mov si, disk_read_error_msg  ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
 
-; Global-Descriptor-Table                    
+
+; Global-Descriptor-Table 
+CODE_SEG equ GDT_code - GDT_start ; offset of descriptor
+DATA_SEG equ GDT_data - GDT_start ; offset of descriptor           
 GDT_start:
     GDT_null:  
         dd 0x0  ; four times 00000000
@@ -116,9 +112,7 @@ GDT_descriptor:
     dw GDT_end - GDT_start - 1 ; size of descriptor
     dd GDT_start               ; start of GDT (base address)
 
-
 ; 32 bit protected mode
-
 [bits 32]
 start_protected_mode:
     ; flat memory model
@@ -129,11 +123,11 @@ start_protected_mode:
     mov fs, ax  ; set fs
     mov gs, ax  ; set gs
 
-    mov ebp, 0x90000  ; set 32 bit stack pointer
+    mov ebp, 0x200000  ; set 32 bit stack pointer
     mov esp, ebp      ; init 32 bit stack
 
     jmp KERNEL_LOCATION  ; jump to loaded kernel
 
-; define 510 bytes + 2 bytes after = 512 bytes (boot sector)
-times 510 - ($-$$) db 0 ; ($-$$) = the code before  ; fill in remaining space with 0
-db 0x55, 0xaa  ; boot signature
+
+
+times (5 * 512) - ($ - $$) db 0  ; use exactly 5 sectors (so loading the kernel works)
