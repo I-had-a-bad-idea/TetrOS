@@ -7,7 +7,7 @@
 
 extern uint32_t random_seed;
 
-typedef struct {
+typedef struct __attribute__((packed)){
     uint16_t pitch;
     uint16_t width;
     uint16_t height;

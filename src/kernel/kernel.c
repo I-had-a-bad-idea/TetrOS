@@ -177,16 +177,29 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
     return min + (rand32() % (max - min + 1));
 }
 
+
+// void main() {
+//     uint32_t* fb = (uint32_t*)0xE0000000;
+
+//     while (1) {
+//         for (int i = 0; i < 1024 * 768; i++) {
+//             fb[i] = 0x00FF0000;
+//         }
+//     }
+// }
+
 void main(){
     init_graphics();
     clear_screen();
-    for (int x = 0; x < fb->width / 2; x++) {
-        for (int y = 0; y < fb->height / 2; y++) {
-            put_pixel(x, y, RED); // fill bottom right corner red
-        }
-    }
+    // for (int x = 0; x < fb->width / 2; x++) {
+    //     for (int y = 0; y < fb->height / 2; y++) {
+    //         put_pixel(x, y, RED); // fill bottom right corner red
+    //     }
+    // }
 
-    return;
+    while (1) {
+        fill_screen(RED);
+    }
     // print_string("Kernel started!\nSetting up the IDT...\n");
     // init_idt();
     // print_string("IDT-setup successful!\nSetting up the ISR...\n");
@@ -221,5 +234,5 @@ void main(){
     //     }
     // }
 
-    // return;
+    return;
 }
