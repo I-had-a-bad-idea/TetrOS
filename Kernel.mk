@@ -48,7 +48,7 @@ binaries/full_kernel.bin: \
 
 
 # Combine bootloader + kernel
-TetrOS.bin: binaries/boot.bin binaries/full_kernel.bin binaries/zeroes.bin | binaries
+TetrOS.bin: binaries/boot_stage_1.bin binaries/boot_stage_2.bin binaries/full_kernel.bin binaries/zeroes.bin | binaries
 	cat $^ > $@
 
 
