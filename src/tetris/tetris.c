@@ -7,6 +7,8 @@ ActiveBlock current_block = {0};
 Block rotated_block = {0};
 int score = 0;
 
+bool main_menu = true;
+
 void init_tetris() {
     timer_register(tetris_step, TETRIS_STEP_TICKS);
     timer_register(tetris_render, TETRIS_RENDER_TICKS);
@@ -55,6 +57,18 @@ bool can_move(Block* block, int desired_x, int desired_y) {
 }
 
 void tetris_step() {
+    if (main_menu) {
+        if (get_pressed_key() == '1') {
+            main_menu = false;
+            game_over = false;
+            clear_screen();
+            reset_field();
+            score = 0; // Reset score
+        } else {
+            return;
+        }
+    }
+
     if (game_over) {return;}
 
     if (!block_active) {
@@ -154,6 +168,14 @@ void tetris_step() {
 }
 
 void tetris_render() {
+    if (main_menu) { // Render main menu
+        set_cursor(40, 5); // Middle of screen at the top
+        print_string("TetrOS");
+        set_cursor(40, 8);
+        print_string("1) Start game");
+        return;
+    }
+
     if (game_over) {return;}
     score += POINTS_PER_TICK * TETRIS_RENDER_TICKS;
     reset_cursor();   // We dont need a full reset, since we overwrite it
@@ -213,6 +235,7 @@ void tetris_render() {
 
 void end_game() {
     game_over = true;
+    main_menu = true;  // Display main menu again
     // Render field with all filled blocks
     for (int y = 1; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
@@ -220,6 +243,16 @@ void end_game() {
             int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
             write_char(draw_x, y, BLOCK_CHAR); // first copy
             write_char(draw_x + 1, y, BLOCK_CHAR);  // second copy
+        }
+    }
+    reset_field();
+}
+
+void reset_field() {
+    // Clear field
+    for (int x = 0; x < FIELD_WIDTH; x++) {
+        for (int y = 0; y < FIELD_HEIGHT; y++) {
+            field[x][y] = EMPTY_CHAR;
         }
     }
 }

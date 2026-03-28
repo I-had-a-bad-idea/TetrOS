@@ -75,6 +75,9 @@ You can boot this image in a VM-Software (VirtualBox, QEMU, etc.) or write it to
 In case of VirtualBox use the `TetrOS.img` disk image
 
 ### Controls
+Press 1 to start the game.
+
+
 - A: Move block left
 - D: Move block right
 - S: Move block down
