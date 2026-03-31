@@ -12,7 +12,8 @@ bool main_menu = true;
 void init_tetris() {
     timer_register(tetris_step, TETRIS_STEP_TICKS);
     timer_register(tetris_render, TETRIS_RENDER_TICKS);
-
+    game_over = false;
+    score = 0;
     // Init field
     for (int x = 0; x < FIELD_WIDTH; x++) {
         for (int y = 0; y < FIELD_HEIGHT; y++) {
