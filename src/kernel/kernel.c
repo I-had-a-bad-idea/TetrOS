@@ -21,7 +21,7 @@ timer_event timer_events[MAX_TIMER_EVENTS] = {0};
 static char pressed_key = 0;
 uint32_t cursor_position = 0;
 
-uint32_t random_seed = 1234567890;
+static uint32_t random_seed = 1234567890;
 
 int timer_ticks = 0;
 void timer_irq(Registers* regs) {
@@ -60,6 +60,8 @@ char get_pressed_key() {
 void print_char(char c) {
     unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
+    if (cursor_position > VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
+
     if (c == '\n') {
         // move to next line
         cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
@@ -87,10 +89,10 @@ void print_int(int n) {
     }
 
     // Hanle actual number
-    char buffer[12];
+    char buffer[20];
     int i = 0;
 
-    while (n > 0) {
+    while (n > 0 && i < 19) {
         buffer[i++] = '0' + (n % 10);
         n /= 10;
     }
@@ -163,7 +165,6 @@ void main(){
     init_tetris();
 
     clear_screen();
-
     int last_timer_ticks = 0;
     while (1) {
         if (cursor_position / VIDEO_WIDTH >= VIDEO_HEIGHT) {
