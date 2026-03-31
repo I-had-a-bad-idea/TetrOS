@@ -5,7 +5,6 @@
 #include "irq.h"
 #include "io.h"
 
-extern uint32_t random_seed;
 
 #define VIDEO_MEMORY 0xB8000
 
@@ -45,8 +44,6 @@ extern timer_event timer_events[MAX_TIMER_EVENTS];
 extern uint16_t timer_event_count;
 
 extern uint32_t cursor_position;
-
-
 
 void print_char(char c);
 void print_string(const char* str);
