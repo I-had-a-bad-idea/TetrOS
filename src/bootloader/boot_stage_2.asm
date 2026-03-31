@@ -11,13 +11,12 @@ mov ds, ax                 ; ds = 0
 
 ; Load kernel from disk
 mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
-mov dh, 40    ; number of sectors to read (currently reads too much to avoid future problems)
 
 mov ah, 0x02         ; read floppy/hard disk in CHS mode
-mov al, dh           ; number of sectors to read
-mov ch, 0x00         ; cylinder number = 0
-mov dh, 0x00         ; head number = 0
-mov cl, 0x7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
+mov al, 40           ; number of sectors to read (currently reads too much to avoid future problems)
+mov ch, 0         ; cylinder number = 0
+mov dh, 0         ; head number = 0
+mov cl, 7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
 ; dl already contains drive number
 int 0x13             ; read from disk
 ; error management
