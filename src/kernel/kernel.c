@@ -148,6 +148,7 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
 }
 
 void main(){
+    random_seed = 1234567890; // Reset random seed on each boot for consistent behavior
     print_string("Kernel started!\nSetting up the IDT...\n");
     init_idt();
     print_string("IDT-setup successful!\nSetting up the ISR...\n");
