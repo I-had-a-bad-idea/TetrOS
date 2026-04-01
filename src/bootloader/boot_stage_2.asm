@@ -86,10 +86,6 @@ print_string_end:
 disk_read_error_msg:
     db "Reading disk failed!", 0
 
-disk_error:
-    mov si, disk_read_error_msg  ; set error message
-    call print_string            ; call print (prints si (the error msg))
-    jmp $                        ; halt execution
 vbe_fail_error_msg:
     db "Setting up VBE failed!", 0
 
