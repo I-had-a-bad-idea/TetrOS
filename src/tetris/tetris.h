@@ -25,3 +25,4 @@ void init_tetris();
 void tetris_step();
 void tetris_render();
 void end_game();
+void reset_field();

@@ -15,11 +15,7 @@ void init_tetris() {
     game_over = false;
     score = 0;
     // Init field
-    for (int x = 0; x < FIELD_WIDTH; x++) {
-        for (int y = 0; y < FIELD_HEIGHT; y++) {
-            field[x][y] = EMPTY_CHAR;
-        }
-    }
+    reset_field();
 }
 
 void rotate_block(Block* src, Block* dst, int direction) {
