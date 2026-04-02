@@ -38,9 +38,9 @@ mov [FRAMEBUFFER_INFO_LOCATION + 2], ax
 mov ax, [vbe_mode_info_block + 20] ; height
 mov [FRAMEBUFFER_INFO_LOCATION + 4], ax
 mov eax, [vbe_mode_info_block + 28] ; framebuffer addr
-mov [FRAMEBUFFER_INFO_LOCATION + 8], eax
+mov [FRAMEBUFFER_INFO_LOCATION + 6], eax
 mov al, [vbe_mode_info_block + 25] ; bpp (color depth)
-mov [FRAMEBUFFER_INFO_LOCATION + 12], al
+mov [FRAMEBUFFER_INFO_LOCATION + 10], al
 
 
 ; Load kernel from disk
