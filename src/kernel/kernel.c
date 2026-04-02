@@ -16,9 +16,8 @@ const char keyboard_scancodes[128] = {
 ' ',
 };
 
-
-framebuffer_t* fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
-uint8_t* framebuffer;
+framebuffer_t* fb;
+uint32_t* framebuffer;
 
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
@@ -63,12 +62,13 @@ char get_pressed_key() {
 
 
 void init_graphics() {
-    framebuffer = (uint8_t*)fb->address;
+    fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
+    framebuffer = (uint32_t*)fb->address;
 }
 
 
 void put_pixel(int x, int y, uint32_t color) {
-    uint8_t* pixel = framebuffer + y * fb->pitch;
+    uint8_t* pixel = (uint8_t*)framebuffer + y * fb->pitch;
 
     switch (fb->bpp) {
         case 16: {

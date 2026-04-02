@@ -18,7 +18,7 @@ typedef struct __attribute__((packed)){
 
 
 extern framebuffer_t* fb;
-extern uint8_t* framebuffer;
+extern uint32_t* framebuffer;
 
 
 #define BLACK 0x000000
