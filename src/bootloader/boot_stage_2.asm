@@ -1,7 +1,7 @@
 [org 0x8000] ; set origin to offset
 [bits 16]
 
-KERNEL_LOCATION equ 0x1000 ; set kernel memory address
+KERNEL_LOCATION equ 0x50000 ; set kernel memory address
 FRAMEBUFFER_INFO_LOCATION equ 0x9000
 
 xor ax, ax                 ; ax = 0     

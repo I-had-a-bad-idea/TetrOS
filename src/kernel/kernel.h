@@ -14,7 +14,7 @@ typedef struct __attribute__((packed)){
     uint8_t bpp;
 } framebuffer_t;
 
-#define FRAMEBUFFER_INFO_LOCATION 0x9000 // see also bootloader/boot.asm
+#define FRAMEBUFFER_INFO_LOCATION 0x50000 // see also bootloader/boot_stage_2.asm
 
 
 extern framebuffer_t* fb;
