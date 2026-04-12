@@ -25,14 +25,35 @@ int 0x13             ; read from disk
 jc disk_error        ; jmp to disk_error if cf is 1 (error)
 jmp disk_sucess      ; jmp to disk_success if no error
 disk_error:
+    mov si, disk_error_msg
+    call print_string
     jmp $                        ; halt execution
 
-disk_sucess:        ; if sucess continue
+disk_sucess:
+    mov si, disk_success_msg
+    call print_string
+        ; if sucess continue
     mov dl, [BOOT_DISK]
     jmp 0x0000:STAGE_2_LOAD_ADDRESS
         
 BOOT_DISK:
     db 0
+
+disk_error_msg:
+    db "Disk read error!", 0
+disk_success_msg:
+    db "Disk read successful!", 0
+
+print_string:
+    mov ah, 0x0E
+.next:
+    lodsb
+    cmp al, 0
+    je .done
+    int 0x10
+    jmp .next
+.done:
+    ret
 
 ; define 510 bytes + 2 bytes after = 512 bytes (boot sector)
 times 510 - ($-$$) db 0 ; ($-$$) = the code before  ; fill in remaining space with 0
