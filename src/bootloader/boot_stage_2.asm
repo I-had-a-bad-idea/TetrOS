@@ -13,7 +13,7 @@ mov ax, 0x4F00 ; get controller info
 mov di, vbe_info_block
 int 0x10
 cmp ax, 0x004F
-jne vbe_fail
+jne vbe_controller_info_fail
 
 ; get a mode (hardcoded) # TODO: dont hardcode this
 mov ax, 0x4F01
@@ -21,14 +21,14 @@ mov cx, 0x118 ; 1024*768*24
 mov di, vbe_mode_info_block
 int 0x10
 cmp ax, 0x004F
-jne vbe_fail 
+jne vbe_mode_info_fail 
 
 ; set the mode
 mov ax, 0x4F02
 mov bx, 0x4118 ; 0x4000 = linear framebuffer
 int 0x10
 cmp ax, 0x004F
-jne vbe_fail
+jne vbe_mode_set_fail
 
 ; store the vbe mode info
 mov ax, [vbe_mode_info_block + 26] ; pitch
@@ -86,11 +86,27 @@ print_string_end:
 disk_read_error_msg:
     db "Reading disk failed!", 0
 
-vbe_fail_error_msg:
-    db "Setting up VBE failed!", 0
+vbe_controller_info_fail_error_msg:
+    db "Getting VBE controller info failed", 0
 
-vbe_fail:
-    mov si, vbe_fail_error_msg   ; set error message
+vbe_mode_info_fail_error_msg:
+    db "Getting VBE mode info failed", 0
+
+vbe_mode_set_fail_error_msg:
+    db "Setting VBE mode failed", 0
+
+vbe_controller_info_fail:
+    mov si, vbe_controller_info_fail_error_msg   ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
+
+vbe_mode_info_fail:
+    mov si, vbe_mode_info_fail_error_msg   ; set error message
+    call print_string            ; call print (prints si (the error msg))
+    jmp $                        ; halt execution
+
+vbe_mode_set_fail:
+    mov si, vbe_mode_set_fail_error_msg   ; set error message
     call print_string            ; call print (prints si (the error msg))
     jmp $                        ; halt execution
 
