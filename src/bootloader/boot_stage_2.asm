@@ -3,6 +3,8 @@
 
 KERNEL_LOCATION equ 0x50000 ; set kernel memory address
 FRAMEBUFFER_INFO_LOCATION equ 0x9000
+VBE_INFO_ADDR       equ 0x9200
+VBE_MODE_INFO_ADDR  equ 0x9400
 
 xor ax, ax                 ; ax = 0     
 mov es, ax                 ; es = 0
@@ -10,38 +12,32 @@ mov ds, ax                 ; ds = 0
 
 ; VBE setup
 mov ax, 0x4F00 ; get controller info
-mov di, vbe_info_block
+mov di, VBE_INFO_ADDR
 int 0x10
 cmp ax, 0x004F
 jne vbe_controller_info_fail
 
-; get a mode (hardcoded) # TODO: dont hardcode this
-mov ax, 0x4F01
-mov cx, 0x118 ; 1024*768*24
-mov di, vbe_mode_info_block
-int 0x10
-cmp ax, 0x004F
-jne vbe_mode_info_fail 
+; set the mode (hardcoded) # TODO: dont hardcode this
+xor ax, ax
+mov es, ax              ; re-zero ES, BIOS may have trashed it
 
-; set the mode
 mov ax, 0x4F02
-mov bx, 0x4118 ; 0x4000 = linear framebuffer
+mov bx, 0x4118 ; 1024*768*24 with LFB
 int 0x10
 cmp ax, 0x004F
 jne vbe_mode_set_fail
 
-; store the vbe mode info
-mov ax, [vbe_mode_info_block + 26] ; pitch
-mov [FRAMEBUFFER_INFO_LOCATION + 0], ax
-mov ax, [vbe_mode_info_block + 18] ; width
-mov [FRAMEBUFFER_INFO_LOCATION + 2], ax
-mov ax, [vbe_mode_info_block + 20] ; height
-mov [FRAMEBUFFER_INFO_LOCATION + 4], ax
-mov eax, [vbe_mode_info_block + 28] ; framebuffer addr
-mov [FRAMEBUFFER_INFO_LOCATION + 6], eax
-mov al, [vbe_mode_info_block + 25] ; bpp (color depth)
-mov [FRAMEBUFFER_INFO_LOCATION + 10], al
 
+; get mode_info 
+xor ax, ax
+mov es, ax              ; re-zero ES, BIOS may have trashed it
+
+mov ax, 0x4F01
+mov cx, 0x4118 ; 1024*768*24 with LFB
+mov di, VBE_MODE_INFO_ADDR
+int 0x10
+cmp ax, 0x004F
+jne vbe_mode_info_fail 
 
 ; Load kernel from disk
 mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
@@ -167,12 +163,6 @@ GDT_descriptor:
     dd GDT_start               ; start of GDT (base address)
 
 
-; VBE stuff
-vbe_info_block:
-    times 512 db 0
-
-vbe_mode_info_block:
-    times 256 db 0
 
 ; 32 bit protected mode
 [bits 32]
