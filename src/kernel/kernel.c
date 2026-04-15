@@ -16,8 +16,7 @@ const char keyboard_scancodes[128] = {
 ' ',
 };
 
-framebuffer_t* fb;
-uint32_t* framebuffer;
+struct vbe_mode_info* vbe_info = (struct vbe_mode_info*)VBE_INFO_ADDR;
 
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
@@ -61,41 +60,41 @@ char get_pressed_key() {
 }
 
 
-void init_graphics() {
-    fb = (framebuffer_t*)FRAMEBUFFER_INFO_LOCATION;
-    framebuffer = (uint32_t*)fb->address;
-}
-
 
 void put_pixel(int x, int y, uint32_t color) {
-    uint8_t* pixel = (uint8_t*)framebuffer + y * fb->pitch;
-
-    switch (fb->bpp) {
-        case 16: {
-            uint16_t c16 = ((color >> 16) & 0x1F) << 11  // R
-                          | ((color >> 8) & 0x3F) << 5   // G
-                          | ((color >> 3) & 0x1F);       // B
-            ((uint16_t*)pixel)[x] = c16;
-            break;
-        }
-        case 24: {
-            pixel += x * 3;
-            pixel[0] = color & 0xFF;        // Blue
-            pixel[1] = (color >> 8) & 0xFF; // Green
-            pixel[2] = (color >> 16) & 0xFF; // Red
-            break;
-        }
-        case 32: {
-            ((uint32_t*)pixel)[x] = color;
-            break;
-        }
+    if (vbe_info->framebuffer == 0) return;
+    
+    uint8_t* fb = (uint8_t*)vbe_info->framebuffer;
+    int pitch = vbe_info->pitch;
+    int bpp = vbe_info->bpp / 8; // bytes-per-pixel 
+    
+    uint8_t* pixel = fb + (y * pitch) + (x * bpp);
+    
+    if (bpp == 2) {
+        *(uint16_t*)pixel = (uint16_t)color;
+    } else if (bpp == 3) {
+        pixel[0] = color & 0xFF;
+        pixel[1] = (color >> 8) & 0xFF;
+        pixel[2] = (color >> 16) & 0xFF;
+    } else if (bpp == 4) {
+        *(uint32_t*)pixel = color;
     }
 }
 
+// Convert RGB values to framebuffer color format
+uint32_t vbe_rgb(uint8_t r, uint8_t g, uint8_t b) {
+    if (vbe_info->bpp == 16) {
+        // 16-bit RGB: 5-6-5 format
+        return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
+    } else {
+        // 24/32-bit RGB: standard format
+        return (r << 16) | (g << 8) | b;
+    }
+}
 
 void fill_screen(uint32_t color) {
-    for (int y = 0; y < fb->height; y++) {
-        for (int x = 0; x < fb->width; x++) {
+    for (int y = 0; y < vbe_info->height; y++) {
+        for (int x = 0; x < vbe_info->width; x++) {
             put_pixel(x, y, color);
         }
     }
@@ -139,7 +138,7 @@ void print_int(int n) {
 }
 
 void clear_screen() {
-    fill_screen(BLACK);
+    fill_screen(RED);
 }
 
 void reset_cursor() {
@@ -236,4 +235,8 @@ void main(){
     // }
 
     return;
+}
+
+void halt_cpu() {
+    asm volatile("jmp .");
 }
