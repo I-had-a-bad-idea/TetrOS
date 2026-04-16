@@ -6,7 +6,7 @@ xor ax, ax                 ; ax = 0
 mov es, ax                 ; es = 0
 mov ds, ax                 ; ds = 0
 
-mov bp, 0x8000             ; set base pointer
+mov bp, 0x200000             ; set base pointer (same as 32 bit stack)
 mov sp, bp                 ; set stack pointer 
 
 
