@@ -1,8 +1,7 @@
 [org 0x8000] ; set origin to offset
 [bits 16]
 
-KERNEL_LOCATION equ 0x50000 ; set kernel memory address
-FRAMEBUFFER_INFO_LOCATION equ 0x9000
+KERNEL_LOCATION equ 0x50000 ; kernel memory address
 VBE_INFO_ADDR       equ 0x9200
 VBE_MODE_INFO_ADDR  equ 0x9400
 
@@ -45,10 +44,10 @@ mov dh, 40    ; number of sectors to read (currently reads too much to avoid fut
 
 mov ah, 0x02         ; read floppy/hard disk in CHS mode
 mov al, dh           ; number of sectors to read
-mov ch, 0x00         ; cylinder number = 0
-mov dh, 0x00         ; head number = 0
-mov cl, 0x7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
-; dl already contains drive number
+mov ch, 0            ; cylinder number = 0
+mov dh, 0            ; head number = 0
+mov cl, 7           ; sector number = 7 (sector 1 is stage1 and sections 2-6 is stage2 )
+mov dl, [BOOT_DISK]  ; drive number
 int 0x13             ; read from disk
 ; error management
 jc disk_error        ; jmp to disk_error if cf is 1 (error)
@@ -58,10 +57,12 @@ jc disk_error        ; jmp to disk_error if cf is 1 (error)
 cli ; disable all interrupts
 lgdt [GDT_descriptor] ; load GDT
 
+
 ; Change to 32 bit protected mode
 mov eax, cr0 ; move cr0 into eax
 or eax, 1 ; change last bit (enable)
 mov cr0, eax ; move eax back to cr0
+
 jmp CODE_SEG:start_protected_mode ; jmp to code segment (far jump)
 
 
@@ -163,6 +164,8 @@ GDT_descriptor:
     dd GDT_start               ; start of GDT (base address)
 
 
+BOOT_DISK:
+    db 0
 
 ; 32 bit protected mode
 [bits 32]
@@ -177,7 +180,7 @@ start_protected_mode:
 
     mov ebp, 0x200000  ; set 32 bit stack pointer
     mov esp, ebp      ; init 32 bit stack
-
+    
     jmp KERNEL_LOCATION  ; jump to loaded kernel
 
 
