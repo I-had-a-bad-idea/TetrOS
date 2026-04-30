@@ -89,7 +89,7 @@ void tetris_step() {
         // Spawn new block
         current_block.block = next_block;
         next_block = get_random_block();
-        
+
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
         current_block.y = 0;
         block_active = true;
@@ -277,6 +277,25 @@ void tetris_render() {
                 int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
                 write_char(draw_x, screen_y, block_char); // first copy
                 write_char(draw_x + 1, screen_y, block_char); // second copy
+            }
+        }
+    }
+    // Render next block
+    if (next_block) {
+        set_cursor(VIDEO_WIDTH - 25, 10);
+        print_string("Next block:");
+        set_cursor(VIDEO_WIDTH - 25, 12);
+
+        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                int screen_x = (VIDEO_WIDTH - 25) + bx;
+                int screen_y = 12 + by;
+                char block_char = EMPTY_CHAR;
+                if (current_block.block->cells[bx][by]) {
+                    block_char = FALLING_BLOCK_CHAR;
+                }
+                write_char(draw_x, field_y, FALLING_BLOCK_CHAR); // first copy
+                write_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR); // second copy
             }
         }
     }
