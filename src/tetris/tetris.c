@@ -5,6 +5,7 @@ bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
 Block rotated_block = {0};
+Block held_block = {0};
 int score = 0;
 
 bool main_menu = true;
@@ -93,13 +94,31 @@ void tetris_step() {
     int desired_x = current_block.x;
     int desired_y = current_block.y;
     int desired_rotation = 0;
+    bool switch_block_with_held = false;
     switch (key) {
         case 'a': desired_x--; break; // left
         case 'd': desired_x++; break; // right
         case 's': desired_y++; break; // down
         case 'q': desired_rotation = 1; break; // rotate left
         case 'e': desired_rotation = -1; break; // rotate right
+        case 'c': switch_block_with_held = true; break; // switch blocks
     }
+    // "Hold" queue
+    if (switch_block_with_held) {
+        if (held_block) {
+            // Switch the two
+            Block temp = held_block;
+            held_block = ActiveBlock.block;
+            ActiveBlock.block = temp;
+        }
+        else {
+            // just put in buffer and then return (next step)
+            held_block = ActiveBlock.block;
+            return;
+        }
+    }
+
+
     // Rotation
     if (desired_rotation != 0) {
         rotate_block(current_block.block, &rotated_block, desired_rotation);
