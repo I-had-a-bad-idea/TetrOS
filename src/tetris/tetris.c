@@ -5,6 +5,7 @@ bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
 Block rotated_block = {0};
+Block next_block = {0};
 int score = 0;
 
 bool main_menu = true;
@@ -53,6 +54,19 @@ bool can_move(Block* block, int desired_x, int desired_y) {
     return true;
 }
 
+Block get_random_block() {
+    int block_type = rand_range(0, 6);
+    switch (block_type) {
+        case 0: return &I; break;
+        case 1: return &O; break;
+        case 2: return &T; break;
+        case 3: return &S; break;
+        case 4: return &Z; break;
+        case 5: return &J; break;
+        case 6: return &L; break;
+    }
+}
+
 void tetris_step() {
     if (main_menu) {
         if (get_pressed_key() == '1') {
@@ -61,6 +75,7 @@ void tetris_step() {
             clear_screen();
             reset_field();
             score = 0; // Reset score
+            next_block = get_random_block(); // Reset next block
         } else {
             return;
         }
@@ -70,16 +85,9 @@ void tetris_step() {
 
     if (!block_active) {
         // Spawn new block
-        int block_type = rand_range(0, 6);
-        switch (block_type) {
-            case 0: current_block.block = &I; break;
-            case 1: current_block.block = &O; break;
-            case 2: current_block.block = &T; break;
-            case 3: current_block.block = &S; break;
-            case 4: current_block.block = &Z; break;
-            case 5: current_block.block = &J; break;
-            case 6: current_block.block = &L; break;
-        }
+        current_block.block = next_block;
+        next_block = get_random_block();
+        
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
         current_block.y = 0;
         block_active = true;
