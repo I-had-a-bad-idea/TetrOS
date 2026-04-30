@@ -247,6 +247,24 @@ void tetris_render() {
         write_char(x, y1, HORIZONTAL_BORDER_CHAR);
         write_char(x, y2, HORIZONTAL_BORDER_CHAR);
     }
+
+    // Render "held" block
+    if (held_block) {
+        set_cursor(VIDEO_WIDTH - 15, 10);
+        print_string("Held block:");
+        set_cursor(VIDEO_WIDTH - 15, 12);
+
+        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                if (held_block.block->cells[bx][by]) {
+                    int screen_x = (VIDEO_WIDTH - 15) + bx;
+                    int screen_y = 12 + by;
+                    write_char(screen_x, screen_y, FALLING_BLOCK_CHAR); // first copy
+                    write_char(screen_x + 1, screen_y, FALLING_BLOCK_CHAR); // second copy
+                }
+            }
+        }
+    }
 }
 
 void end_game() {
