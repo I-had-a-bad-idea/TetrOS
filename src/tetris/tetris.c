@@ -253,21 +253,22 @@ void tetris_render() {
 
     // Render "held" block
     if (block_held) {
-        set_cursor(VIDEO_WIDTH - 15, 10);
+        set_cursor(HELD_BLOCK_POSTION, 10);
         print_string("Held block:");
-        set_cursor(VIDEO_WIDTH - 15, 12);
+        set_cursor(HELD_BLOCK_POSTION, 12);
 
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (VIDEO_WIDTH - 15) + bx;
+                int screen_x = (HELD_BLOCK_POSTION + 8) + bx;
                 int screen_y = 12 + by;
                 char block_char = EMPTY_CHAR;
 
                 if (held_block->cells[bx][by]) {
                     block_char = FALLING_BLOCK_CHAR;
                 }
-                write_char(screen_x, screen_y, block_char); // first copy
-                write_char(screen_x + 1, screen_y, block_char); // second copy
+                int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
+                write_char(draw_x, screen_y, block_char); // first copy
+                write_char(draw_x + 1, screen_y, block_char); // second copy
             }
         }
     }
