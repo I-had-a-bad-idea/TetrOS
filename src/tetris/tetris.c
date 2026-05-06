@@ -5,7 +5,7 @@ bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
 Block rotated_block = {0};
-Block next_block = {0};
+Block* next_block = {0};
 int score = 0;
 
 bool main_menu = true;
@@ -54,7 +54,7 @@ bool can_move(Block* block, int desired_x, int desired_y) {
     return true;
 }
 
-Block get_random_block() {
+Block* get_random_block() {
     int block_type = rand_range(0, 6);
     switch (block_type) {
         case 0: return &I; break;
@@ -248,12 +248,12 @@ void tetris_render() {
                 int screen_x = (VIDEO_WIDTH - 25) + bx;
                 int screen_y = 12 + by;
                 char block_char = EMPTY_CHAR;
-                if (current_block.block->cells[bx][by]) {
+                if (next_block->cells[bx][by]) {
                     block_char = FALLING_BLOCK_CHAR;
                 }
-                write_char(draw_x, field_y, FALLING_BLOCK_CHAR); // first copy
-                write_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR); // second copy
-                }
+                int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
+                write_char(draw_x, screen_y, FALLING_BLOCK_CHAR); // first copy
+                write_char(draw_x + 1, screen_y, FALLING_BLOCK_CHAR); // second copy
             }
         }
     }
