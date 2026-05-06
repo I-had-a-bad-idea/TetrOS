@@ -2,14 +2,30 @@
 
 char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
+bool block_held = false;
+
 bool game_over = false;
+bool main_menu = true;
+
 ActiveBlock current_block = {0};
 Block* rotated_block = {0};
 Block* held_block = {0};
-bool block_held = false;
+Block* next_block = {0};
+
 int score = 0;
 
-bool main_menu = true;
+Block* get_random_block() {
+    int block_type = rand_range(0, 6);
+    switch (block_type) {
+        case 0: return &I; break;
+        case 1: return &O; break;
+        case 2: return &T; break;
+        case 3: return &S; break;
+        case 4: return &Z; break;
+        case 5: return &J; break;
+        case 6: return &L; break;
+    }
+}
 
 void init_tetris() {
     timer_register(tetris_step, TETRIS_STEP_TICKS);
@@ -17,6 +33,7 @@ void init_tetris() {
     game_over = false;
     score = 0;
     // Init field
+    next_block = get_random_block();
     reset_field();
 }
 
@@ -63,6 +80,7 @@ void tetris_step() {
             clear_screen();
             reset_field();
             score = 0; // Reset score
+            next_block = get_random_block(); // Reset next block
         } else {
             return;
         }
@@ -72,16 +90,9 @@ void tetris_step() {
 
     if (!block_active) {
         // Spawn new block
-        int block_type = rand_range(0, 6);
-        switch (block_type) {
-            case 0: current_block.block = &I; break;
-            case 1: current_block.block = &O; break;
-            case 2: current_block.block = &T; break;
-            case 3: current_block.block = &S; break;
-            case 4: current_block.block = &Z; break;
-            case 5: current_block.block = &J; break;
-            case 6: current_block.block = &L; break;
-        }
+        current_block.block = next_block;
+        next_block = get_random_block();
+
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
         current_block.y = 0;
         block_active = true;
@@ -264,6 +275,27 @@ void tetris_render() {
                 char block_char = EMPTY_CHAR;
 
                 if (held_block->cells[bx][by]) {
+                    block_char = FALLING_BLOCK_CHAR;
+                }
+                int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
+                write_char(draw_x, screen_y, block_char); // first copy
+                write_char(draw_x + 1, screen_y, block_char); // second copy
+            }
+        }
+    }
+    // Render next block
+    if (next_block) {
+        set_cursor(NEXT_BLOCK_POSITION, 10);
+        print_string("Next block:");
+        set_cursor(NEXT_BLOCK_POSITION, 12);
+
+        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                int screen_x = (NEXT_BLOCK_POSITION + 15) + bx;
+                int screen_y = 12 + by;
+                char block_char = EMPTY_CHAR;
+
+                if (next_block->cells[bx][by]) {
                     block_char = FALLING_BLOCK_CHAR;
                 }
                 int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
