@@ -116,6 +116,7 @@ void tetris_step() {
             block_held = true;
             // just put in buffer and then return (next step)
             held_block = current_block.block;
+            block_active = false;
             return;
         }
     }
