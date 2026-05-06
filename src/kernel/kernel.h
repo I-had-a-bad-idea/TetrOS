@@ -43,7 +43,7 @@ typedef struct {
 extern timer_event timer_events[MAX_TIMER_EVENTS];
 extern uint16_t timer_event_count;
 
-extern uint32_t cursor_position;
+extern volatile uint32_t cursor_position;
 
 void print_char(char c);
 void print_string(const char* str);

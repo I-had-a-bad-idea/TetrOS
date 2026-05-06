@@ -19,11 +19,11 @@ const char keyboard_scancodes[128] = {
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
 static char pressed_key = 0;
-uint32_t cursor_position = 0;
+volatile uint32_t cursor_position = 0;
 
 static uint32_t random_seed = 1234567890;
 
-int timer_ticks = 0;
+volatile int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
 }
@@ -58,7 +58,7 @@ char get_pressed_key() {
 }
 
 void print_char(char c) {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
     if (cursor_position > VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
 
@@ -103,7 +103,7 @@ void print_int(int n) {
 }
 
 void clear_screen() {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
         video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
@@ -120,7 +120,7 @@ void set_cursor(int x, int y) {
 }
 
 void write_char(int x, int y, char c) {
-    unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
     video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
 }
 
@@ -147,7 +147,7 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
     return min + (rand32() % (max - min + 1));
 }
 
-void main(){
+volatile void main(){
     random_seed = 1234567890; // Reset random seed on each boot for consistent behavior
     print_string("Kernel started!\nSetting up the IDT...\n");
     init_idt();
