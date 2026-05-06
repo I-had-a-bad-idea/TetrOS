@@ -14,12 +14,26 @@ Block* next_block = {0};
 
 int score = 0;
 
+Block* get_random_block() {
+    int block_type = rand_range(0, 6);
+    switch (block_type) {
+        case 0: return &I; break;
+        case 1: return &O; break;
+        case 2: return &T; break;
+        case 3: return &S; break;
+        case 4: return &Z; break;
+        case 5: return &J; break;
+        case 6: return &L; break;
+    }
+}
+
 void init_tetris() {
     timer_register(tetris_step, TETRIS_STEP_TICKS);
     timer_register(tetris_render, TETRIS_RENDER_TICKS);
     game_over = false;
     score = 0;
     // Init field
+    next_block = get_random_block();
     reset_field();
 }
 
@@ -56,19 +70,6 @@ bool can_move(Block* block, int desired_x, int desired_y) {
         }
     }
     return true;
-}
-
-Block* get_random_block() {
-    int block_type = rand_range(0, 6);
-    switch (block_type) {
-        case 0: return &I; break;
-        case 1: return &O; break;
-        case 2: return &T; break;
-        case 3: return &S; break;
-        case 4: return &Z; break;
-        case 5: return &J; break;
-        case 6: return &L; break;
-    }
 }
 
 void tetris_step() {
@@ -284,21 +285,22 @@ void tetris_render() {
     }
     // Render next block
     if (next_block) {
-        set_cursor(VIDEO_WIDTH - 25, 10);
+        set_cursor(NEXT_BLOCK_POSITION, 10);
         print_string("Next block:");
-        set_cursor(VIDEO_WIDTH - 25, 12);
+        set_cursor(NEXT_BLOCK_POSITION, 12);
 
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (VIDEO_WIDTH - 25) + bx;
+                int screen_x = (NEXT_BLOCK_POSITION + 15) + bx;
                 int screen_y = 12 + by;
                 char block_char = EMPTY_CHAR;
+
                 if (next_block->cells[bx][by]) {
                     block_char = FALLING_BLOCK_CHAR;
                 }
                 int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
-                write_char(draw_x, screen_y, FALLING_BLOCK_CHAR); // first copy
-                write_char(draw_x + 1, screen_y, FALLING_BLOCK_CHAR); // second copy
+                write_char(draw_x, screen_y, block_char); // first copy
+                write_char(draw_x + 1, screen_y, block_char); // second copy
             }
         }
     }
