@@ -4,8 +4,9 @@ char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
-Block rotated_block = {0};
-Block held_block = {0};
+Block* rotated_block = {0};
+Block* held_block = {0};
+bool block_held = false;
 int score = 0;
 
 bool main_menu = true;
@@ -105,15 +106,16 @@ void tetris_step() {
     }
     // "Hold" queue
     if (switch_block_with_held) {
-        if (held_block) {
+        if (block_held) {
             // Switch the two
-            Block temp = held_block;
-            held_block = ActiveBlock.block;
-            ActiveBlock.block = temp;
+            Block* temp = held_block;
+            held_block = current_block.block;
+            current_block.block = temp;
         }
         else {
+            block_held = true;
             // just put in buffer and then return (next step)
-            held_block = ActiveBlock.block;
+            held_block = current_block.block;
             return;
         }
     }
@@ -121,11 +123,11 @@ void tetris_step() {
 
     // Rotation
     if (desired_rotation != 0) {
-        rotate_block(current_block.block, &rotated_block, desired_rotation);
+        rotate_block(current_block.block, rotated_block, desired_rotation);
         // Check if block can be rotated
-        if (can_move(&rotated_block, current_block.x, current_block.y)) {
+        if (can_move(rotated_block, current_block.x, current_block.y)) {
             // Apply rotation
-            *current_block.block = rotated_block;
+            current_block.block = rotated_block;
         }
     }
 
@@ -249,7 +251,7 @@ void tetris_render() {
     }
 
     // Render "held" block
-    if (held_block) {
+    if (block_held) {
         set_cursor(VIDEO_WIDTH - 15, 10);
         print_string("Held block:");
         set_cursor(VIDEO_WIDTH - 15, 12);
@@ -260,7 +262,7 @@ void tetris_render() {
                 int screen_y = 12 + by;
                 char block_char = EMPTY_CHAR;
 
-                if (held_block.block->cells[bx][by]) {
+                if (held_block->cells[bx][by]) {
                     block_char = FALLING_BLOCK_CHAR;
                 }
                 write_char(screen_x, screen_y, block_char); // first copy
