@@ -14,7 +14,7 @@ TETRIS_SRC := $(wildcard src/tetris/*.c)
 # Object files generated from them
 TETRIS_OBJ := $(patsubst src/tetris/%.c,kernel_object_files/%.o,$(TETRIS_SRC))
 
-CFLAGS = -ffreestanding -m32 -I src
+CFLAGS = -ffreestanding -m32 -I src -Os
 
 all: TetrOS.bin
 

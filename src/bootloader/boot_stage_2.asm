@@ -13,7 +13,7 @@ mov ds, ax                 ; ds = 0
 mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
 
 mov ah, 0x02         ; read floppy/hard disk in CHS mode
-mov al, 40           ; number of sectors to read (currently reads too much to avoid future problems)
+mov al, 34           ; number of sectors to read (currently reads too much to avoid future problems)
 mov ch, 0         ; cylinder number = 0
 mov dh, 0         ; head number = 0
 mov cl, 7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )

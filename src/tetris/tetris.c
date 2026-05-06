@@ -4,7 +4,9 @@ char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
 bool block_active = false;
 bool game_over = false;
 ActiveBlock current_block = {0};
-Block rotated_block = {0};
+Block* rotated_block = {0};
+Block* held_block = {0};
+bool block_held = false;
 int score = 0;
 
 bool main_menu = true;
@@ -93,20 +95,40 @@ void tetris_step() {
     int desired_x = current_block.x;
     int desired_y = current_block.y;
     int desired_rotation = 0;
+    bool switch_block_with_held = false;
     switch (key) {
         case 'a': desired_x--; break; // left
         case 'd': desired_x++; break; // right
         case 's': desired_y++; break; // down
         case 'q': desired_rotation = 1; break; // rotate left
         case 'e': desired_rotation = -1; break; // rotate right
+        case 'c': switch_block_with_held = true; break; // switch blocks
     }
+    // "Hold" queue
+    if (switch_block_with_held) {
+        if (block_held) {
+            // Switch the two
+            Block* temp = held_block;
+            held_block = current_block.block;
+            current_block.block = temp;
+        }
+        else {
+            block_held = true;
+            // just put in buffer and then return (next step)
+            held_block = current_block.block;
+            block_active = false;
+            return;
+        }
+    }
+
+
     // Rotation
     if (desired_rotation != 0) {
-        rotate_block(current_block.block, &rotated_block, desired_rotation);
+        rotate_block(current_block.block, rotated_block, desired_rotation);
         // Check if block can be rotated
-        if (can_move(&rotated_block, current_block.x, current_block.y)) {
+        if (can_move(rotated_block, current_block.x, current_block.y)) {
             // Apply rotation
-            *current_block.block = rotated_block;
+            current_block.block = rotated_block;
         }
     }
 
@@ -227,6 +249,28 @@ void tetris_render() {
     for (int x = 0; x < (FIELD_WIDTH + 1) * 2; x++) {
         write_char(x, y1, HORIZONTAL_BORDER_CHAR);
         write_char(x, y2, HORIZONTAL_BORDER_CHAR);
+    }
+
+    // Render "held" block
+    if (block_held) {
+        set_cursor(HELD_BLOCK_POSTION, 10);
+        print_string("Held block:");
+        set_cursor(HELD_BLOCK_POSTION, 12);
+
+        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                int screen_x = (HELD_BLOCK_POSTION + 8) + bx;
+                int screen_y = 12 + by;
+                char block_char = EMPTY_CHAR;
+
+                if (held_block->cells[bx][by]) {
+                    block_char = FALLING_BLOCK_CHAR;
+                }
+                int draw_x = screen_x * 2 + 1; // each x uses 2 chars; +1 for border
+                write_char(draw_x, screen_y, block_char); // first copy
+                write_char(draw_x + 1, screen_y, block_char); // second copy
+            }
+        }
     }
 }
 
