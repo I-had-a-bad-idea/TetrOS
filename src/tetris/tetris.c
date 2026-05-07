@@ -8,7 +8,7 @@ bool game_over = false;
 bool main_menu = true;
 
 ActiveBlock current_block = {0};
-Block* rotated_block = {0};
+Block rotated_block = {0}; // basically a temp for storing potential rotation
 Block* held_block = {0};
 Block* next_block = {0};
 
@@ -135,11 +135,11 @@ void tetris_step() {
 
     // Rotation
     if (desired_rotation != 0) {
-        rotate_block(current_block.block, rotated_block, desired_rotation);
+        rotate_block(current_block.block, &rotated_block, desired_rotation);
         // Check if block can be rotated
-        if (can_move(rotated_block, current_block.x, current_block.y)) {
+        if (can_move(&rotated_block, current_block.x, current_block.y)) {
             // Apply rotation
-            current_block.block = rotated_block;
+            current_block.block = &rotated_block;
         }
     }
 
