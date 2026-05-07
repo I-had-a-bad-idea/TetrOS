@@ -139,7 +139,7 @@ void tetris_step() {
         // Check if block can be rotated
         if (can_move(&rotated_block, current_block.x, current_block.y)) {
             // Apply rotation
-            current_block.block = &rotated_block;
+            *current_block.block = rotated_block;
         }
     }
 
