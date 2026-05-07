@@ -5,7 +5,7 @@ bool block_active = false;
 bool block_held = false;
 
 bool game_over = false;
-bool main_menu = true;
+volatile bool main_menu = true;
 
 ActiveBlock current_block = {0};
 Block rotated_block = {0}; // basically a temp for storing potential rotation
@@ -31,6 +31,7 @@ void init_tetris() {
     timer_register(tetris_step, TETRIS_STEP_TICKS);
     timer_register(tetris_render, TETRIS_RENDER_TICKS);
     game_over = false;
+    main_menu = true;
     score = 0;
     // Init field
     next_block = get_random_block();
