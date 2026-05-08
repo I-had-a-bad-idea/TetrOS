@@ -108,6 +108,7 @@ void tetris_step() {
     int desired_y = current_block.y;
     int desired_rotation = 0;
     bool switch_block_with_held = false;
+    bool hard_drop = false;
     switch (key) {
         case 'a': desired_x--; break; // left
         case 'd': desired_x++; break; // right
@@ -115,6 +116,7 @@ void tetris_step() {
         case 'q': desired_rotation = 1; break; // rotate left
         case 'e': desired_rotation = -1; break; // rotate right
         case 'c': switch_block_with_held = true; break; // switch blocks
+        case ' ': hard_drop = true; break;
     }
     // "Hold" queue
     if (switch_block_with_held) {
@@ -148,6 +150,11 @@ void tetris_step() {
     if (can_move(current_block.block, desired_x, desired_y)) {
         current_block.x = desired_x;
         current_block.y = desired_y;
+    }
+
+    // Hard drop
+    while (can_move(current_block.block, current_block.x, current_block.y + 1)) {
+        current_block.y++;
     }
 
     //// Physics step
