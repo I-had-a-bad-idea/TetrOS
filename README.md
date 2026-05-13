@@ -6,8 +6,6 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 |---------|--------|
 | ![Playing Tetris](screenshots/playing.png) | ![Losing Tetris](screenshots/losing.png) |
 
-> The screenshots above are from an early version of TetrOS and may not reflect the current state of the project. The project is still in development, and features may change over time.
-
 ## Overview
 
 - [TetrOS](#tetros)
@@ -33,7 +31,7 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 - Timer handling
 - Text-mode graphics (VGA)
 - Timer interrupts and event system
-- Fully playable Tetris game
+- Fully playable Tetris game (with movement, holding, hard drop, land preview)
 - Runs on real hardware or in VirtualBox/QEMU
 
 ---
