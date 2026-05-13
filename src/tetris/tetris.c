@@ -12,6 +12,8 @@ Block rotated_block = {0}; // basically a temp for storing potential rotation
 Block* held_block = {0};
 Block* next_block = {0};
 
+int block_land_y = 0;
+
 int score = 0;
 
 Block* get_random_block() {
@@ -151,12 +153,15 @@ void tetris_step() {
         current_block.x = desired_x;
         current_block.y = desired_y;
     }
+    // calculate where it will land
+    block_land_y = current_block.y;
+    while (can_move(current_block.block, current_block.x, block_land_y + 1)) {
+        block_land_y++;
+    }
 
     // Hard drop
     if (hard_drop) {
-        while (can_move(current_block.block, current_block.x, current_block.y + 1)) {
-            current_block.y++;
-        }
+        current_block.y = block_land_y; // Move down as far as possible
     }
 
     //// Physics step
@@ -233,15 +238,11 @@ void tetris_render() {
 
     // Render land position preview
     if (block_active) {
-        int land_y = current_block.y;
-        while (can_move(current_block.block, current_block.x, land_y + 1)) {
-            land_y++;
-        }
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
                 if (current_block.block->cells[bx][by]) {
                     int field_x = current_block.x + bx;
-                    int field_y = land_y + by;
+                    int field_y = block_land_y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
                         int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
                         write_char(draw_x, field_y, PREVIEW_CHAR); // first copy
