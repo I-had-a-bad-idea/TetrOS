@@ -124,6 +124,11 @@ void write_char(int x, int y, char c) {
     video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
 }
 
+void draw_char(int x, int y, char c, uint8_t color) {
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    video_memory[y * VIDEO_WIDTH + x] = (color << 8) | c;
+}
+
 void timer_register(func function, uint32_t interval) {
     if (timer_event_count >= MAX_TIMER_EVENTS) {
         return;
