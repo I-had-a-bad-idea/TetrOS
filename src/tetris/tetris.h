@@ -1,7 +1,8 @@
 #pragma once
 #include "kernel/kernel.h"
-#include "kernel/stdint.h"
 #include "tetris/blocks.h"
+
+typedef unsigned char       uint8_t;
 
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
@@ -22,6 +23,8 @@
 #define VERTICAL_BORDER_CHAR '|'
 #define HORIZONTAL_BORDER_CHAR '-'
 #define EMPTY_CHAR ' '
+
+static const uint8_t COLORS[8] = {RED_ON_BLACK, BLUE_ON_BLACK, CYAN_ON_BLACK, GREEN_ON_BLACK, YELLOW_ON_BLACK, MAGENTA_ON_BLACK, WHITE_ON_BLACK, DARK_GRAY_ON_BLACK};
 
 
 #define CELL_EMPTY 0

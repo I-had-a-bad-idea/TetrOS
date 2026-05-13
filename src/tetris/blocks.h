@@ -1,5 +1,7 @@
 #pragma once
-#include "kernel/stdint.h"
+
+typedef unsigned char       uint8_t;
+typedef unsigned char bool;
 
 #define BLOCK_ARRAY_AXIS_SIZE 4
 
@@ -10,6 +12,7 @@ typedef struct {
 typedef struct {
     Block* block;
     int x, y; // top-left corner of block in field coordinates
+    uint8_t color;
 } ActiveBlock;
 
 extern const Block I;

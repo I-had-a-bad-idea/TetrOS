@@ -53,6 +53,7 @@ void clear_screen();
 void reset_cursor();
 void set_cursor(int x, int y);
 void write_char(int x, int y, char c);
+void draw_char(int x, int y, char c, uint8_t color);
 
 int get_timer_ticks();
 float get_time();
