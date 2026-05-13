@@ -1,6 +1,6 @@
 # TetrOS
 
-TetrOS is a simple, educational OS that boots directly on x86 hardware or in a virtual machine and runs a playable version of Tetris.
+TetrOS is a simple, educational OS that boots directly on x86 hardware or in a virtual machine and runs a playable version of Tetris with all known features.
 
 | Playing | Game over |
 |---------|--------|
@@ -33,6 +33,7 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 - Text-mode graphics (VGA)
 - Timer interrupts and event system
 - Fully playable Tetris game (with movement, holding, hard drop, land preview)
+- Color
 - Runs on real hardware or in VirtualBox/QEMU
 
 ---
@@ -52,7 +53,7 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
    ```bash
    make -f Assembly.mk
    ```
-2. Build the kernl:
+2. Build the kernel:
    ```bash
    make -f Kernel.mk
    ```
@@ -85,6 +86,7 @@ Press 1 to start the game.
 - C: Hold/ switch block
 - space: Hard drop (instant move to bottom)
 
+
 ## Troubleshooting
 - If the OS fails to boot or hangs: Try increasing the loaded sectors in `boot.asm` (see the `mov dh, ...` line).
 - If only a white `A` appears on screen the calling of the kernel main function failed
@@ -92,7 +94,7 @@ Press 1 to start the game.
 Feel free to open an issue, if any problems arise.
 
 ## Field design
-The field is made with a 1D bitmap. Each cell has 4 bits: 1 for filled/empty and 3 for color. The field is 10 cells wide and 20 cells high.
+The field is made with a 1D bitmap. Each cell has 4 bits: 1 for filled/empty and 3 for color (8 colors). The field is 10 cells wide and 20 cells high.
 
 ## License
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) for details.
