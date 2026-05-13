@@ -231,6 +231,27 @@ void tetris_render() {
         }
     }
 
+    // Render land position preview
+    if (block_active) {
+        int land_y = current_block.y;
+        while (can_move(current_block.block, current_block.x, land_y + 1)) {
+            land_y++;
+        }
+        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                if (current_block.block->cells[bx][by]) {
+                    int field_x = current_block.x + bx;
+                    int field_y = land_y + by;
+                    if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
+                        int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
+                        write_char(draw_x, field_y, PREVIEW_CHAR); // first copy
+                        write_char(draw_x + 1, field_y, PREVIEW_CHAR); // second copy
+                    }
+                }
+            }
+        }
+    }
+
     // Render falling block
     if (block_active) {
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {

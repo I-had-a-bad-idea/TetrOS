@@ -18,6 +18,7 @@
 
 #define BLOCK_CHAR '#'
 #define FALLING_BLOCK_CHAR '+' 
+#define PREVIEW_CHAR '.'  // char used to show where the block will land
 #define VERTICAL_BORDER_CHAR '|'
 #define HORIZONTAL_BORDER_CHAR '-'
 #define EMPTY_CHAR ' '
