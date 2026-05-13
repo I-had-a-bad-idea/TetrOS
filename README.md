@@ -84,6 +84,7 @@ Press 1 to start the game.
 - Q: Rotate block left
 - E: Rotate block right
 - C: Hold/ switch block
+- space: Hard drop (instant move to bottom)
 
 ## Troubleshooting
 - If the OS fails to boot or hangs: Try increasing the loaded sectors in `boot.asm` (see the `mov dh, ...` line).
