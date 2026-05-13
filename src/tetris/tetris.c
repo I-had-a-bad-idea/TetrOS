@@ -286,8 +286,7 @@ void tetris_render() {
     set_cursor(score_x, score_y);
     print_string("Score:");
     print_int(score);
-    print_char('\n');
-    print_int(current_block.color);
+
     
     // Render borders
 

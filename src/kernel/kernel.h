@@ -17,6 +17,7 @@
 #define YELLOW_ON_BLACK     0x0E
 #define CYAN_ON_BLACK       0x0B
 #define MAGENTA_ON_BLACK    0x0D
+#define BROWN_ON_BLACK      0x06
 #define LIGHT_GRAY_ON_BLACK 0x07
 #define DARK_GRAY_ON_BLACK  0x08
 #define BLACK_ON_RED        0x40
