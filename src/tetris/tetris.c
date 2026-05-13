@@ -1,6 +1,6 @@
 #include "tetris.h"
 
-char field[FIELD_WIDTH][FIELD_HEIGHT] = {0};
+uint8_t field[FIELD_BYTES] = {0};
 bool block_active = false;
 bool block_held = false;
 
@@ -27,6 +27,7 @@ Block* get_random_block() {
         case 5: return &J; break;
         case 6: return &L; break;
     }
+
 }
 
 void init_tetris() {
@@ -66,7 +67,7 @@ bool can_move(Block* block, int desired_x, int desired_y) {
                     return false;
                 }
                 // Check collision with existing blocks
-                if (field[field_x][field_y] == BLOCK_CHAR) {
+                if (IS_CELL_FILLED(field_get(field_x, field_y))) {
                     return false;
                 }
             }
@@ -94,6 +95,8 @@ void tetris_step() {
     if (!block_active) {
         // Spawn new block
         current_block.block = next_block;
+        // apply color
+        current_block.color = rand_range(0, 7); // 8 colors
         next_block = get_random_block();
 
         current_block.x = FIELD_WIDTH / 2 - 2; // Center top
@@ -179,7 +182,7 @@ void tetris_step() {
                     int field_x = current_block.x + bx;
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        field[field_x][field_y] = BLOCK_CHAR;
+                        field_set(field_x, field_y, MAKE_CELL(1, current_block.color)); // filled, color
                     }
                 }
             }
@@ -191,7 +194,7 @@ void tetris_step() {
     for (int y = 0; y < FIELD_HEIGHT; y++) {
         bool line_full = true;
         for (int x = 0; x < FIELD_WIDTH; x++) {
-            if (field[x][y] == EMPTY_CHAR || field[x][y] == FALLING_BLOCK_CHAR) { // also check for falling block chars, since they are not actually placed yet
+            if (!IS_CELL_FILLED(field_get(x, y))) { // also check for falling block chars, since they are not actually placed yet
                 line_full = false;
                 break;
             }
@@ -201,12 +204,12 @@ void tetris_step() {
             // Move all lines above down
             for (int ty = y; ty > 0; ty--) {
                 for (int x = 0; x < FIELD_WIDTH; x++) {
-                    field[x][ty] = field[x][ty - 1];
+                    field_set(x, ty, field_get(x, ty - 1));
                 }
             }
             // Clear top line
             for (int x = 0; x < FIELD_WIDTH; x++) {
-                field[x][0] = EMPTY_CHAR;
+                field_set(x, 0, CELL_EMPTY);
             }
         }
     }
@@ -228,11 +231,18 @@ void tetris_render() {
     // Render field
     for (int y = 1; y <= FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
-            char c = field[x][y];
+            uint8_t cell = field_get(x, y);
+            uint8_t color = GET_CELL_COLOR(cell);
+            
+            char c = EMPTY_CHAR;
+            if (IS_CELL_FILLED(cell)) {
+                c = BLOCK_CHAR;
+            }
 
             int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-            write_char(draw_x, y, c); // first copy
-            write_char(draw_x + 1, y, c);  // second copy
+            draw_char(draw_x, y, c, COLORS[color]); // first copy
+            draw_char(draw_x + 1, y, c, COLORS[color]);  // second copy
+            
         }
     }
 
@@ -245,8 +255,8 @@ void tetris_render() {
                     int field_y = block_land_y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
                         int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        write_char(draw_x, field_y, PREVIEW_CHAR); // first copy
-                        write_char(draw_x + 1, field_y, PREVIEW_CHAR); // second copy
+                        draw_char(draw_x, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // first copy
+                        draw_char(draw_x + 1, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // second copy
                     }
                 }
             }
@@ -262,8 +272,8 @@ void tetris_render() {
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
                         int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        write_char(draw_x, field_y, FALLING_BLOCK_CHAR); // first copy
-                        write_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR); // second copy
+                        draw_char(draw_x, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // first copy
+                        draw_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // second copy
                     }
                 }
             }
@@ -276,6 +286,8 @@ void tetris_render() {
     set_cursor(score_x, score_y);
     print_string("Score:");
     print_int(score);
+    print_char('\n');
+    print_int(current_block.color);
     
     // Render borders
 
@@ -357,7 +369,7 @@ void reset_field() {
     // Clear field
     for (int x = 0; x < FIELD_WIDTH; x++) {
         for (int y = 0; y < FIELD_HEIGHT; y++) {
-            field[x][y] = EMPTY_CHAR;
+            field_set(x, y, CELL_EMPTY);
         }
     }
 }
