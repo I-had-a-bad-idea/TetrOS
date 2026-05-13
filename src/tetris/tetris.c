@@ -153,8 +153,10 @@ void tetris_step() {
     }
 
     // Hard drop
-    while (can_move(current_block.block, current_block.x, current_block.y + 1)) {
-        current_block.y++;
+    if (hard_drop) {
+        while (can_move(current_block.block, current_block.x, current_block.y + 1)) {
+            current_block.y++;
+        }
     }
 
     //// Physics step
