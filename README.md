@@ -17,6 +17,7 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
   - [Running](#running)
     - [Controls](#controls)
   - [Troubleshooting](#troubleshooting)
+  - [Field design](#field-design)
   - [License](#license)
   - [Disclaimer](#disclaimer)
 
@@ -89,6 +90,9 @@ Press 1 to start the game.
 - If only a white `A` appears on screen the calling of the kernel main function failed
 
 Feel free to open an issue, if any problems arise.
+
+## Field design
+The field is made with a 1D bitmap. Each cell has 4 bits: 1 for filled/empty and 3 for color. The field is 10 cells wide and 20 cells high.
 
 ## License
 This project is licensed under the MIT license. See the [LICENSE](LICENSE) for details.

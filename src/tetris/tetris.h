@@ -23,7 +23,47 @@
 #define HORIZONTAL_BORDER_CHAR '-'
 #define EMPTY_CHAR ' '
 
-extern char field[FIELD_WIDTH][FIELD_HEIGHT];
+
+#define CELL_EMPTY 0
+#define CELL_FILLED_MASK 0x1 // 0001 <- last bit important
+#define CELL_COLOR_MASK 0xE  // first 3 bits important -> 1110 
+
+#define MAKE_CELL(filled, color) (((filled) & 0x1) | (((color) & 0x7) <<1))
+#define IS_CELL_FILLED(cell) ((cell) & CELL_FILLED_MASK)
+#define GET_CELL_COLOR(cell) (((cell) >> 1) & 0x7)
+
+#define FIELD_CELL_COUNT (FIELD_WIDTH * FIELD_HEIGHT)
+#define FIELD_BYTES ((FIELD_CELL_COUNT + 1) / 2)
+
+extern uint8_t field[FIELD_BYTES];
+
+static inline int field_index(int x, int y) {
+    return y * FIELD_WIDTH + x;
+}
+
+static inline uint8_t field_get(int x, int y) {
+    int idx = field_index(x, y);
+
+    uint8_t cell_byte = field[idx / 2];
+
+    if ((idx % 2) == 0) { // if first cell (lower 4 bitss)
+        return cell_byte & 0x0F; // lower 4 bits
+    } else {
+        return (cell_byte >> 4) & 0x0F; // higher 4 bits
+    }
+}
+
+static inline void field_set(int x, int y, uint8_t value) {
+    int idx = field_index(x, y);
+
+    uint8_t* cell_byte = &field[idx / 2];
+
+    if ((idx % 2) == 0) { // if first cell (lower 4 bitss)
+        *cell_byte = (*cell_byte & 0xF0) | (value & 0x0F); // lower 4 bits
+    } else {
+        *cell_byte = (*cell_byte & 0x0F) | ((value & 0x0F) << 4); // higher 4 bits
+    }
+}
 
 void init_tetris();
 void tetris_step();
