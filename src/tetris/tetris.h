@@ -4,6 +4,9 @@
 
 typedef unsigned char       uint8_t;
 
+#define FIELD_X 20
+#define FIELD_Y 1
+
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
 
