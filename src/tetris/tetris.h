@@ -79,5 +79,8 @@ void tetris_step();
 void tetris_render();
 void end_game();
 void reset_field();
+
 void render_playfield_background();
 void render_main_menu();
+
+void render_text_panel(int x, int y, const char* text);

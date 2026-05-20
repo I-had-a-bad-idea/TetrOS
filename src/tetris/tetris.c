@@ -15,6 +15,7 @@ Block* next_block = {0};
 int block_land_y = 0;
 
 int score = 0;
+char score_buffer[20] = {0};
 
 Block* get_random_block() {
     int block_type = rand_range(0, 6);
@@ -284,20 +285,19 @@ void tetris_render() {
     // Render score 
     int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
     int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
-    set_cursor(score_x, score_y);
-    print_string("Score:");
-    print_int(score);
+    render_text_panel(score_x, score_y, "Score:");
+    iota(score, score_buffer);
+    render_text_panel(score_x, score_y + 3, score_buffer);
 
     // Render "held" block
     if (block_held) {
-        set_cursor(HELD_BLOCK_POSTION, 10);
-        print_string("Held block:");
-        set_cursor(HELD_BLOCK_POSTION, 12);
+        render_text_panel(HELD_BLOCK_POSTION, 10, "Held block:");
+        set_cursor(HELD_BLOCK_POSTION, 13);
 
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
                 int screen_x = (HELD_BLOCK_POSTION + 8) + bx;
-                int screen_y = 12 + by;
+                int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
                 if (held_block->cells[bx][by]) {
@@ -311,14 +311,13 @@ void tetris_render() {
     }
     // Render next block
     if (next_block) {
-        set_cursor(NEXT_BLOCK_POSITION, 10);
-        print_string("Next block:");
-        set_cursor(NEXT_BLOCK_POSITION, 12);
+        render_text_panel(NEXT_BLOCK_POSITION, 10, "Next block:");
+        set_cursor(NEXT_BLOCK_POSITION, 13);
 
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
                 int screen_x = (NEXT_BLOCK_POSITION + 15) + bx;
-                int screen_y = 12 + by;
+                int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
                 if (next_block->cells[bx][by]) {
@@ -330,6 +329,20 @@ void tetris_render() {
             }
         }
     }
+}
+
+void render_text_panel(int x, int y, const char* text) {
+    set_cursor(x, y);
+    print_string("+-------------+");
+
+    set_cursor(x, y + 1);
+    print_string("|             |");
+
+    set_cursor(x, y + 2);
+    print_string("+-------------+");
+
+    set_cursor(x + 2, y + 1);
+    print_string(text);
 }
 
 void render_borders() {

@@ -64,4 +64,6 @@ char get_pressed_key();
 uint32_t rand32();
 uint32_t rand_range(uint32_t min, uint32_t max);
 
+void iota(int n, char* buffer); // converts int to string and stores in buffer, returns pointer to buffer
+
 void timer_register(func function, uint32_t interval);
