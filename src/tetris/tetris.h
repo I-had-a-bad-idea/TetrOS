@@ -4,14 +4,14 @@
 
 typedef unsigned char       uint8_t;
 
-#define FIELD_X 20
+#define FIELD_X 18
 #define FIELD_Y 1
 
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
 
-#define HELD_BLOCK_POSTION VIDEO_WIDTH - 15 
-#define NEXT_BLOCK_POSITION VIDEO_WIDTH - 30
+#define HELD_BLOCK_POSTION VIDEO_WIDTH - 16 
+#define NEXT_BLOCK_POSITION VIDEO_WIDTH - 33
 
 #define TITLE_POSITION_X 12
 #define MAIN_MENU_STAR_COUNT 100
@@ -83,4 +83,5 @@ void reset_field();
 void render_playfield_background();
 void render_main_menu();
 
+void render_box(int x, int y, int width, int height, uint8_t color);
 void render_text_panel(int x, int y, const char* text);

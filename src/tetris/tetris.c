@@ -218,13 +218,18 @@ void tetris_step() {
 
 void tetris_render() {
     if (main_menu) { // Render main menu
+        if (game_over) {
+            render_text_panel(VIDEO_WIDTH / 2 - 7, VIDEO_HEIGHT / 2 - 2, "Game Over!");
+            render_text_panel(VIDEO_WIDTH / 2 - 12, VIDEO_HEIGHT / 2 - 1, "Press '1' to play");
+            return;
+        }
         render_main_menu();
         return;
     }
 
     if (game_over) {return;}
     score += POINTS_PER_TICK * TETRIS_RENDER_TICKS;
-    reset_cursor();   // We dont need a full reset, since we overwrite it
+    clear_screen();
     render_playfield_background(); // Render background and borders
   
     // Render field
@@ -283,7 +288,7 @@ void tetris_render() {
     }
 
     // Render score 
-    int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
+    int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 14; // to the right of the field
     int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
     render_text_panel(score_x, score_y, "Score:");
     iota(score, score_buffer);
@@ -294,9 +299,10 @@ void tetris_render() {
         render_text_panel(HELD_BLOCK_POSTION, 10, "Held block:");
         set_cursor(HELD_BLOCK_POSTION, 13);
 
+        render_box(HELD_BLOCK_POSTION + 2, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 2, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around held block
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (HELD_BLOCK_POSTION + 8) + bx;
+                int screen_x = (HELD_BLOCK_POSTION + 9) + bx;
                 int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
@@ -314,9 +320,10 @@ void tetris_render() {
         render_text_panel(NEXT_BLOCK_POSITION, 10, "Next block:");
         set_cursor(NEXT_BLOCK_POSITION, 13);
 
+        render_box(NEXT_BLOCK_POSITION + 1, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 4, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around next block
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (NEXT_BLOCK_POSITION + 15) + bx;
+                int screen_x = (NEXT_BLOCK_POSITION + 17) + bx;
                 int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
@@ -331,16 +338,26 @@ void tetris_render() {
     }
 }
 
+void render_box(int x, int y, int width, int height, uint8_t color) {
+    // Top and bottom borders
+    for (int i = 0; i < width; i++) {
+        write_char(x + i, y, HORIZONTAL_BORDER_CHAR);
+        write_char(x + i, y + height - 1, HORIZONTAL_BORDER_CHAR);
+    }
+    // Left and right borders
+    for (int j = 0; j < height; j++) {
+        write_char(x, y + j, VERTICAL_BORDER_CHAR);
+        write_char(x + width - 1, y + j, VERTICAL_BORDER_CHAR);
+    }
+    // Corners
+    write_char(x, y, '+');
+    write_char(x + width - 1, y, '+');
+    write_char(x, y + height - 1, '+');
+    write_char(x + width - 1, y + height - 1, '+');
+}
+
 void render_text_panel(int x, int y, const char* text) {
-    set_cursor(x, y);
-    print_string("+-------------+");
-
-    set_cursor(x, y + 1);
-    print_string("|             |");
-
-    set_cursor(x, y + 2);
-    print_string("+-------------+");
-
+    render_box(x, y, 15, 3, WHITE_ON_BLACK);
     set_cursor(x + 2, y + 1);
     print_string(text);
 }
@@ -372,18 +389,20 @@ void render_borders() {
 
 void render_background() {
     set_color(DARK_GRAY_ON_BLACK);
-    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
-        for (int x = FIELD_X + 1; x < FIELD_X + (FIELD_WIDTH + 1) * 2 - 1; x++) {
-            write_char(x, y, ' ');
+    for (int y = 0; y < VIDEO_HEIGHT; y++) {
+        for (int x = 0; x < VIDEO_WIDTH; x++) {
+            if (rand_range(0, 100) < 2) { // ~2% chance to render a dot for subtle starry background
+                write_char(x, y, '.');
+            }
         }
     }
-
-    set_color(WHITE_ON_BLACK); // Reset color for next render
 }
 
 void render_playfield_background() {
-    render_borders();
     render_background();
+    render_borders();
+
+    set_color(WHITE_ON_BLACK); // Reset color for next render
 }
 
 void render_main_menu_stars() {
@@ -504,7 +523,6 @@ void end_game() {
             }
         }
     }
-    reset_field();
 }
 
 void reset_field() {
