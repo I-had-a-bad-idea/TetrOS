@@ -10,11 +10,12 @@ typedef unsigned char       uint8_t;
 #define HELD_BLOCK_POSTION VIDEO_WIDTH - 15 
 #define NEXT_BLOCK_POSITION VIDEO_WIDTH - 30
 
-#define TETRIS_RENDER_TICKS 5
-#define TETRIS_STEP_TICKS 10
+#define TETRIS_RENDER_TICKS 1
+#define TETRIS_STEP_TICKS 3
+#define BLOCK_FALL_STEP_TICKS 3 // how many step ticks between each automatic block fall (gravity)
 
 #define POINTS_PER_LINE 100
-#define POINTS_PER_TICK 1
+#define POINTS_PER_TICK 0.1
 
 
 #define BLOCK_CHAR '#'

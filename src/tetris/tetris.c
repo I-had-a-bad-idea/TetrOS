@@ -13,8 +13,9 @@ Block* held_block = {0};
 Block* next_block = {0};
 
 int block_land_y = 0;
+int block_fall_tick_counter = 0;
 
-int score = 0;
+float score = 0.0;
 
 Block* get_random_block() {
     int block_type = rand_range(0, 6);
@@ -118,8 +119,8 @@ void tetris_step() {
         case 'a': desired_x--; break; // left
         case 'd': desired_x++; break; // right
         case 's': desired_y++; break; // down
-        case 'q': desired_rotation = 1; break; // rotate left
-        case 'e': desired_rotation = -1; break; // rotate right
+        case 'q': desired_rotation = 1; break; // rotate right
+        case 'e': desired_rotation = -1; break; // rotate left
         case 'c': switch_block_with_held = true; break; // switch blocks
         case ' ': hard_drop = true; break;
     }
@@ -168,21 +169,25 @@ void tetris_step() {
     }
 
     //// Physics step
-    bool can_move_down = can_move(current_block.block, current_block.x, current_block.y + 1); 
+    block_fall_tick_counter++;
+    if (block_fall_tick_counter >= BLOCK_FALL_STEP_TICKS) {
+        block_fall_tick_counter = 0;
+        bool can_move_down = can_move(current_block.block, current_block.x, current_block.y + 1); 
 
-    // Move block down or place it if it cant move down
-    if (can_move_down) {
-        current_block.y++;
-    } else {
-        block_active = false;
-        // Place block in field
-        for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
-            for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                if (current_block.block->cells[bx][by]) {
-                    int field_x = current_block.x + bx;
-                    int field_y = current_block.y + by;
-                    if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        field_set(field_x, field_y, MAKE_CELL(1, current_block.color)); // filled, color
+        // Move block down or place it if it cant move down
+        if (can_move_down) {
+            current_block.y++;
+        } else {
+            block_active = false;
+            // Place block in field
+            for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+                for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+                    if (current_block.block->cells[bx][by]) {
+                        int field_x = current_block.x + bx;
+                        int field_y = current_block.y + by;
+                        if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
+                            field_set(field_x, field_y, MAKE_CELL(1, current_block.color)); // filled, color
+                        }
                     }
                 }
             }
