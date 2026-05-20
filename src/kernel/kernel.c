@@ -23,6 +23,8 @@ volatile uint32_t cursor_position = 0;
 
 static uint32_t random_seed = 1234567890;
 
+volatile uint8_t current_color = WHITE_ON_BLACK;
+
 volatile int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
@@ -66,7 +68,7 @@ void print_char(char c) {
         // move to next line
         cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
     } else {
-        video_memory[cursor_position++] = (WHITE_ON_BLACK << 8) | c;
+        video_memory[cursor_position++] = (current_color << 8) | c;
     }
 }
 
@@ -106,7 +108,7 @@ void clear_screen() {
     volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
 
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
-        video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
+        video_memory[i] = BLACK_ON_BLACK << 8 | ' ';
     }
     cursor_position = 0;
 }
@@ -119,9 +121,13 @@ void set_cursor(int x, int y) {
     cursor_position = y * VIDEO_WIDTH + x;
 }
 
+void set_color(uint8_t color) {
+    current_color = color;
+}
+
 void write_char(int x, int y, char c) {
     volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
+    video_memory[y * VIDEO_WIDTH + x] = (current_color << 8) | c;
 }
 
 void draw_char(int x, int y, char c, uint8_t color) {
