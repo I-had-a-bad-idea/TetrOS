@@ -224,6 +224,7 @@ void tetris_render() {
     if (game_over) {return;}
     score += POINTS_PER_TICK * TETRIS_RENDER_TICKS;
     reset_cursor();   // We dont need a full reset, since we overwrite it
+    render_playfield_background(); // Render background and borders
   
     // Render field
     for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
@@ -287,24 +288,6 @@ void tetris_render() {
     print_string("Score:");
     print_int(score);
 
-    
-    // Render borders
-
-    // Render left and right borders
-    int x1 = FIELD_X;
-    int x2 = FIELD_X + (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
-    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
-        write_char(x1, y, VERTICAL_BORDER_CHAR);
-        write_char(x2, y, VERTICAL_BORDER_CHAR);
-    }
-    // Render top and bottom borders   
-    int y1 = FIELD_Y;
-    int y2 = FIELD_Y + FIELD_HEIGHT + 1;
-    for (int x = FIELD_X; x < FIELD_X + (FIELD_WIDTH + 1) * 2; x++) {
-        write_char(x, y1, HORIZONTAL_BORDER_CHAR);
-        write_char(x, y2, HORIZONTAL_BORDER_CHAR);
-    }
-
     // Render "held" block
     if (block_held) {
         set_cursor(HELD_BLOCK_POSTION, 10);
@@ -349,6 +332,46 @@ void tetris_render() {
     }
 }
 
+void render_borders() {
+    set_color(BLUE_ON_BLACK);
+
+    // Render left and right borders
+    int x1 = FIELD_X;
+    int x2 = FIELD_X + (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
+    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
+        write_char(x1, y, VERTICAL_BORDER_CHAR);
+        write_char(x2, y, VERTICAL_BORDER_CHAR);
+    }
+    // Render top and bottom borders   
+    int y1 = FIELD_Y;
+    int y2 = FIELD_Y + FIELD_HEIGHT + 1;
+    for (int x = FIELD_X; x < FIELD_X + (FIELD_WIDTH + 1) * 2; x++) {
+        write_char(x, y1, HORIZONTAL_BORDER_CHAR);
+        write_char(x, y2, HORIZONTAL_BORDER_CHAR);
+    }
+
+    // Render corners
+    write_char(x1, y1, '+');
+    write_char(x2, y1, '+');
+    write_char(x1, y2, '+');
+    write_char(x2, y2, '+');
+}
+
+void render_background() {
+    set_color(DARK_GRAY_ON_BLACK);
+    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
+        for (int x = FIELD_X + 1; x < FIELD_X + (FIELD_WIDTH + 1) * 2 - 1; x++) {
+            write_char(x, y, ' ');
+        }
+    }
+
+    set_color(WHITE_ON_BLACK); // Reset color for next render
+}
+
+void render_playfield_background() {
+    render_borders();
+    render_background();
+}
 
 void render_main_menu_stars() {
     // Render some random stars in the background of the main menu
