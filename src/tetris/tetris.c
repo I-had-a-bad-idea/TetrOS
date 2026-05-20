@@ -226,7 +226,7 @@ void tetris_render() {
     reset_cursor();   // We dont need a full reset, since we overwrite it
   
     // Render field
-    for (int y = 1; y <= FIELD_HEIGHT; y++) {    // rows
+    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
             uint8_t cell = field_get(x, y);
             uint8_t color = GET_CELL_COLOR(cell);
@@ -236,9 +236,10 @@ void tetris_render() {
                 c = BLOCK_CHAR;
             }
 
-            int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-            draw_char(draw_x, y, c, COLORS[color]); // first copy
-            draw_char(draw_x + 1, y, c, COLORS[color]);  // second copy
+            int draw_x = FIELD_X + x * 2 + 1;  // each x uses 2 chars; +1 for border
+            int draw_y = FIELD_Y + 1 + y;      // field rows start below the top border
+            draw_char(draw_x, draw_y, c, COLORS[color]); // first copy
+            draw_char(draw_x + 1, draw_y, c, COLORS[color]);  // second copy
             
         }
     }
@@ -251,9 +252,10 @@ void tetris_render() {
                     int field_x = current_block.x + bx;
                     int field_y = block_land_y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        draw_char(draw_x, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // first copy
-                        draw_char(draw_x + 1, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // second copy
+                        int draw_x = FIELD_X + field_x * 2 + 1; // each x uses 2 chars; +1 for border
+                        int draw_y = FIELD_Y + 1 + field_y;
+                        draw_char(draw_x, draw_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // first copy
+                        draw_char(draw_x + 1, draw_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // second copy
                     }
                 }
             }
@@ -268,9 +270,10 @@ void tetris_render() {
                     int field_x = current_block.x + bx;
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        draw_char(draw_x, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // first copy
-                        draw_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // second copy
+                        int draw_x = FIELD_X + field_x * 2 + 1; // each x uses 2 chars; +1 for border
+                        int draw_y = FIELD_Y + 1 + field_y;
+                        draw_char(draw_x, draw_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // first copy
+                        draw_char(draw_x + 1, draw_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // second copy
                     }
                 }
             }
@@ -278,8 +281,8 @@ void tetris_render() {
     }
 
     // Render score 
-    int score_x = (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
-    int score_y = 20;
+    int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
+    int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
     set_cursor(score_x, score_y);
     print_string("Score:");
     print_int(score);
@@ -288,16 +291,16 @@ void tetris_render() {
     // Render borders
 
     // Render left and right borders
-    int x1 = 0;
-    int x2 = (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
-    for (int y = 0; y < FIELD_HEIGHT; y++) {
+    int x1 = FIELD_X;
+    int x2 = FIELD_X + (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
+    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
         write_char(x1, y, VERTICAL_BORDER_CHAR);
         write_char(x2, y, VERTICAL_BORDER_CHAR);
     }
     // Render top and bottom borders   
-    int y1 = 0;
-    int y2 = FIELD_HEIGHT;
-    for (int x = 0; x < (FIELD_WIDTH + 1) * 2; x++) {
+    int y1 = FIELD_Y;
+    int y2 = FIELD_Y + FIELD_HEIGHT + 1;
+    for (int x = FIELD_X; x < FIELD_X + (FIELD_WIDTH + 1) * 2; x++) {
         write_char(x, y1, HORIZONTAL_BORDER_CHAR);
         write_char(x, y2, HORIZONTAL_BORDER_CHAR);
     }
@@ -452,15 +455,16 @@ void end_game() {
     game_over = true;
     main_menu = true;  // Display main menu again
     // Render field with all filled blocks
-    for (int y = 1; y < FIELD_HEIGHT; y++) {    // rows
+    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
 
             // Keep existing blocks
             if (!IS_CELL_FILLED(field_get(x, y))) {
                 
-                int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-                draw_char(draw_x, y, BLOCK_CHAR, BLACK_ON_WHITE); // first copy
-                draw_char(draw_x + 1, y, BLOCK_CHAR, BLACK_ON_WHITE);  // second copy
+                int draw_x = FIELD_X + x * 2 + 1;  // each x uses 2 chars; +1 for border
+                int draw_y = FIELD_Y + 1 + y;
+                draw_char(draw_x, draw_y, BLOCK_CHAR, BLACK_ON_WHITE); // first copy
+                draw_char(draw_x + 1, draw_y, BLOCK_CHAR, BLACK_ON_WHITE);  // second copy
             }
         }
     }
