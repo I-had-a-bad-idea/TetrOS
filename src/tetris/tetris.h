@@ -18,6 +18,7 @@ typedef unsigned char       uint8_t;
 
 #define TETRIS_RENDER_TICKS 5
 #define TETRIS_STEP_TICKS 10
+#define WAIT_TICKS_AFTER_GAME_OVER 50
 
 #define POINTS_PER_LINE 100
 #define POINTS_PER_TICK 1
