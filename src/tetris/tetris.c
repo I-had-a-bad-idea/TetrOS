@@ -361,9 +361,13 @@ void end_game() {
     for (int y = 1; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
 
-            int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-            write_char(draw_x, y, BLOCK_CHAR); // first copy
-            write_char(draw_x + 1, y, BLOCK_CHAR);  // second copy
+            // Keep existing blocks
+            if (!IS_CELL_FILLED(field_get(x, y))) {
+                
+                int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
+                draw_char(draw_x, y, BLOCK_CHAR, BLACK_ON_WHITE); // first copy
+                draw_char(draw_x + 1, y, BLOCK_CHAR, BLACK_ON_WHITE);  // second copy
+            }
         }
     }
     reset_field();
