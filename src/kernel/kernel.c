@@ -158,6 +158,33 @@ uint32_t rand_range(uint32_t min, uint32_t max) {
     return min + (rand32() % (max - min + 1));
 }
 
+void iota(int n, char* buffer) {
+    if (n == 0) {
+        buffer[0] = '0';
+        buffer[1] = '\0';
+        return buffer;
+    }
+
+    int i = 0;
+    if (n < 0) {
+        buffer[i++] = '-';
+        n = -n;
+    }
+
+    char temp[20];
+    int j = 0;
+
+    while (n > 0 && j < 19) {
+        temp[j++] = '0' + (n % 10);
+        n /= 10;
+    }
+
+    for (int k = j - 1; k >= 0; k--) {
+        buffer[i++] = temp[k];
+    }
+    buffer[i] = '\0';
+}
+
 volatile void main(){
     random_seed = 1234567890; // Reset random seed on each boot for consistent behavior
     print_string("Kernel started!\nSetting up the IDT...\n");
