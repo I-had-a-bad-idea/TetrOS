@@ -10,6 +10,8 @@ typedef unsigned char       uint8_t;
 #define HELD_BLOCK_POSTION VIDEO_WIDTH - 15 
 #define NEXT_BLOCK_POSITION VIDEO_WIDTH - 30
 
+#define TITLE_POSITION_X 12
+
 #define TETRIS_RENDER_TICKS 5
 #define TETRIS_STEP_TICKS 10
 
