@@ -220,12 +220,93 @@ void tetris_step() {
     }
 }
 
+void render_screen_borders() {
+    set_color(BLUE_ON_BLACK);
+
+    // Top border
+    set_cursor(0, 0);
+    print_string("################################################################################");
+
+    // Bottom border
+    set_cursor(0, 24);
+    print_string("################################################################################");
+
+    // Side borders
+    for (int y = 1; y < 24; y++) {
+        set_cursor(0, y);
+        print_string("#");
+
+        set_cursor(79, y);
+        print_string("#");
+    }
+}
+
+void render_title() {
+    // Title shadow
+    set_color(DARK_GRAY_ON_BLACK);
+    set_cursor(TITLE_POSITION_X, 4);
+    print_string("######## ######## ######## ########   #######   ######");
+
+    set_cursor(TITLE_POSITION_X, 5);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X, 6);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##");
+
+    set_cursor(TITLE_POSITION_X, 7);
+    print_string("   ##    ######      ##    ########  ##     ##  ######");
+
+    set_cursor(TITLE_POSITION_X, 8);
+    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
+
+    set_cursor(TITLE_POSITION_X, 9);
+    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X, 10);
+    print_string("   ##    ########    ##    ##     ##  #######   ######");
+
+    // Main title
+    set_color(CYAN_ON_BLACK);
+    set_cursor(TITLE_POSITION_X - 1, 3);
+    print_string("######## ######## ######## ########   #######   ######");
+
+    set_cursor(TITLE_POSITION_X - 1, 4);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 5);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 6);
+    print_string("   ##    ######      ##    ########  ##     ##  ######");
+
+    set_cursor(TITLE_POSITION_X - 1, 7);
+    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 8);
+    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 9);
+    print_string("   ##    ########    ##    ##     ##  #######   ######");
+}
+
+void render_main_menu() {
+    // Screen borders
+    render_screen_borders();
+    render_title();
+
+    set_cursor(30, 15); // 40 - len("Press 1 to start") / 2
+    set_color(YELLOW_ON_BLACK);
+    print_string("+----------------------+");
+
+    set_cursor(30, 16);
+    print_string("|  [1] Start Game      |");
+
+    set_color(WHITE_ON_BLACK);
+}
+
 void tetris_render() {
     if (main_menu) { // Render main menu
-        set_cursor(40, 5); // Middle of screen at the top
-        print_string("TetrOS");
-        set_cursor(40, 8);
-        print_string("1) Start game");
+        render_main_menu();
         return;
     }
 
