@@ -5,6 +5,7 @@ bool block_active = false;
 bool block_held = false;
 
 bool game_over = false;
+uint8_t game_over_wait_ticks = 0;
 volatile bool main_menu = true;
 
 ActiveBlock current_block = {0};
@@ -224,9 +225,12 @@ void tetris_step() {
 void tetris_render() {
     if (main_menu) { // Render main menu
         if (game_over) {
-            render_text_panel(VIDEO_WIDTH / 2 - 7, VIDEO_HEIGHT / 2 - 2, "Game Over!");
-            render_text_panel(VIDEO_WIDTH / 2 - 12, VIDEO_HEIGHT / 2 - 1, "Press '1' to play");
-            return;
+            game_over_wait_ticks += TETRIS_RENDER_TICKS;
+            if (game_over_wait_ticks >= WAIT_TICKS_AFTER_GAME_OVER) {
+                game_over_wait_ticks = 0;
+                game_over = false;
+            }
+        return;
         }
         render_main_menu();
         return;

@@ -19,6 +19,7 @@ typedef unsigned char       uint8_t;
 #define TETRIS_RENDER_TICKS 1
 #define TETRIS_STEP_TICKS 3
 #define BLOCK_FALL_STEP_TICKS 3 // how many step ticks between each automatic block fall (gravity)
+#define WAIT_TICKS_AFTER_GAME_OVER 50
 
 #define POINTS_PER_LINE 100
 #define POINTS_PER_TICK 0.1
