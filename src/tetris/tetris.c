@@ -347,6 +347,17 @@ void tetris_render() {
 }
 
 
+void render_main_menu_stars() {
+    // Render some random stars in the background of the main menu
+    set_color(DARK_GRAY_ON_BLACK);
+    for (int i = 0; i < MAIN_MENU_STAR_COUNT; i++) {
+        int x = rand_range(0, VIDEO_WIDTH - 1);
+        int y = rand_range(0, VIDEO_HEIGHT - 1);
+
+        write_char(x, y, '.');
+    }
+}
+
 void render_screen_borders() {
     set_color(BLUE_ON_BLACK);
 
@@ -417,18 +428,24 @@ void render_title() {
 }
 
 void render_main_menu() {
-    // Screen borders
-    render_screen_borders();
-    render_title();
+    clear_screen(); // Reset screen
 
-    set_cursor(30, 15); // 40 - len("Press 1 to start") / 2
+    render_main_menu_stars();   // Stars around the screen
+    render_screen_borders();    // Borders around the screen
+
+    render_title();    // Big Title in the middle of the screen
+
+    // Menu options
+    set_cursor(28, 15); // 40 - len("Press 1 to start") / 2
     set_color(YELLOW_ON_BLACK);
     print_string("+----------------------+");
 
-    set_cursor(30, 16);
+    set_cursor(28, 16);
     print_string("|  [1] Start Game      |");
+    set_cursor(28, 17);
+    print_string("+----------------------+");
 
-    set_color(WHITE_ON_BLACK);
+    set_color(WHITE_ON_BLACK); // Reset color for next render
 }
 
 void end_game() {

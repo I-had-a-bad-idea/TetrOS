@@ -11,6 +11,7 @@ typedef unsigned char       uint8_t;
 #define NEXT_BLOCK_POSITION VIDEO_WIDTH - 30
 
 #define TITLE_POSITION_X 12
+#define MAIN_MENU_STAR_COUNT 100
 
 #define TETRIS_RENDER_TICKS 5
 #define TETRIS_STEP_TICKS 10
@@ -75,3 +76,4 @@ void tetris_step();
 void tetris_render();
 void end_game();
 void reset_field();
+void render_main_menu();
