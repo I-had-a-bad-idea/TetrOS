@@ -25,6 +25,8 @@ static uint32_t random_seed = 1234567890;
 
 volatile uint8_t current_color = WHITE_ON_BLACK;
 
+static uint16_t backbuffer[VIDEO_WIDTH * VIDEO_HEIGHT] = {0}; // for double buffering
+
 volatile int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
@@ -60,15 +62,13 @@ char get_pressed_key() {
 }
 
 void print_char(char c) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
-    if (cursor_position > VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
+    if (cursor_position >= VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
 
     if (c == '\n') {
         // move to next line
         cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
     } else {
-        video_memory[cursor_position++] = (current_color << 8) | c;
+        backbuffer[cursor_position++] = (current_color << 8) | c;
     }
 }
 
@@ -105,10 +105,8 @@ void print_int(int n) {
 }
 
 void clear_screen() {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
-        video_memory[i] = BLACK_ON_BLACK << 8 | ' ';
+        backbuffer[i] = BLACK_ON_BLACK << 8 | ' ';
     }
     cursor_position = 0;
 }
@@ -126,13 +124,11 @@ void set_color(uint8_t color) {
 }
 
 void write_char(int x, int y, char c) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (current_color << 8) | c;
+    backbuffer[y * VIDEO_WIDTH + x] = (current_color << 8) | c;
 }
 
 void draw_char(int x, int y, char c, uint8_t color) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (color << 8) | c;
+    backbuffer[y * VIDEO_WIDTH + x] = (color << 8) | c;
 }
 
 void timer_register(func function, uint32_t interval) {
@@ -162,7 +158,7 @@ void iota(int n, char* buffer) {
     if (n == 0) {
         buffer[0] = '0';
         buffer[1] = '\0';
-        return buffer;
+        return;
     }
 
     int i = 0;
@@ -183,6 +179,13 @@ void iota(int n, char* buffer) {
         buffer[i++] = temp[k];
     }
     buffer[i] = '\0';
+}
+
+void switch_buffers() {
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
+        video_memory[i] = backbuffer[i];
+    }
 }
 
 volatile void main(){
@@ -218,6 +221,7 @@ volatile void main(){
                 timer_events[i].function();
             }
         }
+        switch_buffers(); // Update screen with backbuffer contents
     }
 
     return;
