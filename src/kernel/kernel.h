@@ -53,6 +53,7 @@ void print_int(int n);
 void clear_screen();
 void reset_cursor();
 void set_cursor(int x, int y);
+void set_color(uint8_t color);
 void write_char(int x, int y, char c);
 void draw_char(int x, int y, char c, uint8_t color);
 
@@ -62,5 +63,7 @@ char get_pressed_key();
 
 uint32_t rand32();
 uint32_t rand_range(uint32_t min, uint32_t max);
+
+void iota(int n, char* buffer); // converts int to string and stores in buffer, returns pointer to buffer
 
 void timer_register(func function, uint32_t interval);

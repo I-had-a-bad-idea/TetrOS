@@ -23,6 +23,10 @@ volatile uint32_t cursor_position = 0;
 
 static uint32_t random_seed = 1234567890;
 
+volatile uint8_t current_color = WHITE_ON_BLACK;
+
+static uint16_t backbuffer[VIDEO_WIDTH * VIDEO_HEIGHT] = {0}; // for double buffering
+
 volatile int timer_ticks = 0;
 void timer_irq(Registers* regs) {
     timer_ticks++;
@@ -58,15 +62,13 @@ char get_pressed_key() {
 }
 
 void print_char(char c) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
-    if (cursor_position > VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
+    if (cursor_position >= VIDEO_WIDTH * VIDEO_HEIGHT) {return;}
 
     if (c == '\n') {
         // move to next line
         cursor_position += VIDEO_WIDTH - (cursor_position % VIDEO_WIDTH);
     } else {
-        video_memory[cursor_position++] = (WHITE_ON_BLACK << 8) | c;
+        backbuffer[cursor_position++] = (current_color << 8) | c;
     }
 }
 
@@ -103,10 +105,8 @@ void print_int(int n) {
 }
 
 void clear_screen() {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
-        video_memory[i] = WHITE_ON_BLACK << 8 | ' ';
+        backbuffer[i] = BLACK_ON_BLACK << 8 | ' ';
     }
     cursor_position = 0;
 }
@@ -119,14 +119,16 @@ void set_cursor(int x, int y) {
     cursor_position = y * VIDEO_WIDTH + x;
 }
 
+void set_color(uint8_t color) {
+    current_color = color;
+}
+
 void write_char(int x, int y, char c) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (WHITE_ON_BLACK << 8) | c;
+    backbuffer[y * VIDEO_WIDTH + x] = (current_color << 8) | c;
 }
 
 void draw_char(int x, int y, char c, uint8_t color) {
-    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
-    video_memory[y * VIDEO_WIDTH + x] = (color << 8) | c;
+    backbuffer[y * VIDEO_WIDTH + x] = (color << 8) | c;
 }
 
 void timer_register(func function, uint32_t interval) {
@@ -150,6 +152,40 @@ uint32_t rand32() {
 
 uint32_t rand_range(uint32_t min, uint32_t max) {
     return min + (rand32() % (max - min + 1));
+}
+
+void iota(int n, char* buffer) {
+    if (n == 0) {
+        buffer[0] = '0';
+        buffer[1] = '\0';
+        return;
+    }
+
+    int i = 0;
+    if (n < 0) {
+        buffer[i++] = '-';
+        n = -n;
+    }
+
+    char temp[20];
+    int j = 0;
+
+    while (n > 0 && j < 19) {
+        temp[j++] = '0' + (n % 10);
+        n /= 10;
+    }
+
+    for (int k = j - 1; k >= 0; k--) {
+        buffer[i++] = temp[k];
+    }
+    buffer[i] = '\0';
+}
+
+void switch_buffers() {
+    volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
+        video_memory[i] = backbuffer[i];
+    }
 }
 
 volatile void main(){
@@ -185,6 +221,7 @@ volatile void main(){
                 timer_events[i].function();
             }
         }
+        switch_buffers(); // Update screen with backbuffer contents
     }
 
     return;

@@ -4,15 +4,22 @@
 
 typedef unsigned char       uint8_t;
 
+#define FIELD_X 18
+#define FIELD_Y 1
+
 #define FIELD_WIDTH 10
 #define FIELD_HEIGHT 20
 
-#define HELD_BLOCK_POSTION VIDEO_WIDTH - 15 
-#define NEXT_BLOCK_POSITION VIDEO_WIDTH - 30
+#define HELD_BLOCK_POSTION VIDEO_WIDTH - 16 
+#define NEXT_BLOCK_POSITION VIDEO_WIDTH - 33
+
+#define TITLE_POSITION_X 12
+#define MAIN_MENU_STAR_COUNT 100
 
 #define TETRIS_RENDER_TICKS 1
 #define TETRIS_STEP_TICKS 3
 #define BLOCK_FALL_STEP_TICKS 3 // how many step ticks between each automatic block fall (gravity)
+#define WAIT_TICKS_AFTER_GAME_OVER 50
 
 #define POINTS_PER_LINE 100
 #define POINTS_PER_TICK 0.1
@@ -74,3 +81,9 @@ void tetris_step();
 void tetris_render();
 void end_game();
 void reset_field();
+
+void render_playfield_background();
+void render_main_menu();
+
+void render_box(int x, int y, int width, int height, uint8_t color);
+void render_text_panel(int x, int y, const char* text);

@@ -5,6 +5,7 @@ bool block_active = false;
 bool block_held = false;
 
 bool game_over = false;
+uint8_t game_over_wait_ticks = 0;
 volatile bool main_menu = true;
 
 ActiveBlock current_block = {0};
@@ -16,6 +17,7 @@ int block_land_y = 0;
 int block_fall_tick_counter = 0;
 
 float score = 0.0;
+char score_buffer[20] = {0};
 
 Block* get_random_block() {
     int block_type = rand_range(0, 6);
@@ -222,19 +224,25 @@ void tetris_step() {
 
 void tetris_render() {
     if (main_menu) { // Render main menu
-        set_cursor(40, 5); // Middle of screen at the top
-        print_string("TetrOS");
-        set_cursor(40, 8);
-        print_string("1) Start game");
+        if (game_over) {
+            game_over_wait_ticks += TETRIS_RENDER_TICKS;
+            if (game_over_wait_ticks >= WAIT_TICKS_AFTER_GAME_OVER) {
+                game_over_wait_ticks = 0;
+                game_over = false;
+            }
+        return;
+        }
+        render_main_menu();
         return;
     }
 
     if (game_over) {return;}
     score += POINTS_PER_TICK * TETRIS_RENDER_TICKS;
-    reset_cursor();   // We dont need a full reset, since we overwrite it
+    clear_screen();
+    render_playfield_background(); // Render background and borders
   
     // Render field
-    for (int y = 1; y <= FIELD_HEIGHT; y++) {    // rows
+    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
             uint8_t cell = field_get(x, y);
             uint8_t color = GET_CELL_COLOR(cell);
@@ -244,9 +252,10 @@ void tetris_render() {
                 c = BLOCK_CHAR;
             }
 
-            int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-            draw_char(draw_x, y, c, COLORS[color]); // first copy
-            draw_char(draw_x + 1, y, c, COLORS[color]);  // second copy
+            int draw_x = FIELD_X + x * 2 + 1;  // each x uses 2 chars; +1 for border
+            int draw_y = FIELD_Y + 1 + y;      // field rows start below the top border
+            draw_char(draw_x, draw_y, c, COLORS[color]); // first copy
+            draw_char(draw_x + 1, draw_y, c, COLORS[color]);  // second copy
             
         }
     }
@@ -259,9 +268,10 @@ void tetris_render() {
                     int field_x = current_block.x + bx;
                     int field_y = block_land_y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        draw_char(draw_x, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // first copy
-                        draw_char(draw_x + 1, field_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // second copy
+                        int draw_x = FIELD_X + field_x * 2 + 1; // each x uses 2 chars; +1 for border
+                        int draw_y = FIELD_Y + 1 + field_y;
+                        draw_char(draw_x, draw_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // first copy
+                        draw_char(draw_x + 1, draw_y, PREVIEW_CHAR, LIGHT_GRAY_ON_BLACK); // second copy
                     }
                 }
             }
@@ -276,9 +286,10 @@ void tetris_render() {
                     int field_x = current_block.x + bx;
                     int field_y = current_block.y + by;
                     if (field_x >= 0 && field_x < FIELD_WIDTH && field_y >= 0 && field_y < FIELD_HEIGHT) {
-                        int draw_x = field_x * 2 + 1; // each x uses 2 chars; +1 for border
-                        draw_char(draw_x, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // first copy
-                        draw_char(draw_x + 1, field_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // second copy
+                        int draw_x = FIELD_X + field_x * 2 + 1; // each x uses 2 chars; +1 for border
+                        int draw_y = FIELD_Y + 1 + field_y;
+                        draw_char(draw_x, draw_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // first copy
+                        draw_char(draw_x + 1, draw_y, FALLING_BLOCK_CHAR, COLORS[current_block.color]); // second copy
                     }
                 }
             }
@@ -286,40 +297,22 @@ void tetris_render() {
     }
 
     // Render score 
-    int score_x = (FIELD_WIDTH + 1) * 2 + 10; // to the right of the field
-    int score_y = 20;
-    set_cursor(score_x, score_y);
-    print_string("Score:");
-    print_int(score);
-
-    
-    // Render borders
-
-    // Render left and right borders
-    int x1 = 0;
-    int x2 = (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
-    for (int y = 0; y < FIELD_HEIGHT; y++) {
-        write_char(x1, y, VERTICAL_BORDER_CHAR);
-        write_char(x2, y, VERTICAL_BORDER_CHAR);
-    }
-    // Render top and bottom borders   
-    int y1 = 0;
-    int y2 = FIELD_HEIGHT;
-    for (int x = 0; x < (FIELD_WIDTH + 1) * 2; x++) {
-        write_char(x, y1, HORIZONTAL_BORDER_CHAR);
-        write_char(x, y2, HORIZONTAL_BORDER_CHAR);
-    }
+    int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 14; // to the right of the field
+    int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
+    render_text_panel(score_x, score_y, "Score:");
+    iota(score, score_buffer);
+    render_text_panel(score_x, score_y + 3, score_buffer);
 
     // Render "held" block
     if (block_held) {
-        set_cursor(HELD_BLOCK_POSTION, 10);
-        print_string("Held block:");
-        set_cursor(HELD_BLOCK_POSTION, 12);
+        render_text_panel(HELD_BLOCK_POSTION, 10, "Held block:");
+        set_cursor(HELD_BLOCK_POSTION, 13);
 
+        render_box(HELD_BLOCK_POSTION + 2, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 2, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around held block
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (HELD_BLOCK_POSTION + 8) + bx;
-                int screen_y = 12 + by;
+                int screen_x = (HELD_BLOCK_POSTION + 9) + bx;
+                int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
                 if (held_block->cells[bx][by]) {
@@ -333,14 +326,14 @@ void tetris_render() {
     }
     // Render next block
     if (next_block) {
-        set_cursor(NEXT_BLOCK_POSITION, 10);
-        print_string("Next block:");
-        set_cursor(NEXT_BLOCK_POSITION, 12);
+        render_text_panel(NEXT_BLOCK_POSITION, 10, "Next block:");
+        set_cursor(NEXT_BLOCK_POSITION, 13);
 
+        render_box(NEXT_BLOCK_POSITION + 1, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 4, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around next block
         for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
             for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
-                int screen_x = (NEXT_BLOCK_POSITION + 15) + bx;
-                int screen_y = 12 + by;
+                int screen_x = (NEXT_BLOCK_POSITION + 17) + bx;
+                int screen_y = 13 + by;
                 char block_char = EMPTY_CHAR;
 
                 if (next_block->cells[bx][by]) {
@@ -354,19 +347,191 @@ void tetris_render() {
     }
 }
 
+void render_box(int x, int y, int width, int height, uint8_t color) {
+    // Top and bottom borders
+    for (int i = 0; i < width; i++) {
+        write_char(x + i, y, HORIZONTAL_BORDER_CHAR);
+        write_char(x + i, y + height - 1, HORIZONTAL_BORDER_CHAR);
+    }
+    // Left and right borders
+    for (int j = 0; j < height; j++) {
+        write_char(x, y + j, VERTICAL_BORDER_CHAR);
+        write_char(x + width - 1, y + j, VERTICAL_BORDER_CHAR);
+    }
+    // Corners
+    write_char(x, y, '+');
+    write_char(x + width - 1, y, '+');
+    write_char(x, y + height - 1, '+');
+    write_char(x + width - 1, y + height - 1, '+');
+}
+
+void render_text_panel(int x, int y, const char* text) {
+    render_box(x, y, 15, 3, WHITE_ON_BLACK);
+    set_cursor(x + 2, y + 1);
+    print_string(text);
+}
+
+void render_borders() {
+    set_color(BLUE_ON_BLACK);
+
+    // Render left and right borders
+    int x1 = FIELD_X;
+    int x2 = FIELD_X + (FIELD_WIDTH + 1) * 2 - 1;  // *2 since double chars
+    for (int y = FIELD_Y + 1; y <= FIELD_Y + FIELD_HEIGHT; y++) {
+        write_char(x1, y, VERTICAL_BORDER_CHAR);
+        write_char(x2, y, VERTICAL_BORDER_CHAR);
+    }
+    // Render top and bottom borders   
+    int y1 = FIELD_Y;
+    int y2 = FIELD_Y + FIELD_HEIGHT + 1;
+    for (int x = FIELD_X; x < FIELD_X + (FIELD_WIDTH + 1) * 2; x++) {
+        write_char(x, y1, HORIZONTAL_BORDER_CHAR);
+        write_char(x, y2, HORIZONTAL_BORDER_CHAR);
+    }
+
+    // Render corners
+    write_char(x1, y1, '+');
+    write_char(x2, y1, '+');
+    write_char(x1, y2, '+');
+    write_char(x2, y2, '+');
+}
+
+void render_background() {
+    set_color(DARK_GRAY_ON_BLACK);
+    for (int y = 0; y < VIDEO_HEIGHT; y++) {
+        for (int x = 0; x < VIDEO_WIDTH; x++) {
+            if (rand_range(0, 100) < 2) { // ~2% chance to render a dot for subtle starry background
+                write_char(x, y, '.');
+            }
+        }
+    }
+}
+
+void render_playfield_background() {
+    render_background();
+    render_borders();
+
+    set_color(WHITE_ON_BLACK); // Reset color for next render
+}
+
+void render_main_menu_stars() {
+    // Render some random stars in the background of the main menu
+    set_color(DARK_GRAY_ON_BLACK);
+    for (int i = 0; i < MAIN_MENU_STAR_COUNT; i++) {
+        int x = rand_range(0, VIDEO_WIDTH - 1);
+        int y = rand_range(0, VIDEO_HEIGHT - 1);
+
+        write_char(x, y, '.');
+    }
+}
+
+void render_screen_borders() {
+    set_color(BLUE_ON_BLACK);
+
+    // Top border
+    set_cursor(0, 0);
+    print_string("################################################################################");
+
+    // Bottom border
+    set_cursor(0, 24);
+    print_string("################################################################################");
+
+    // Side borders
+    for (int y = 1; y < 24; y++) {
+        set_cursor(0, y);
+        print_string("#");
+
+        set_cursor(79, y);
+        print_string("#");
+    }
+}
+
+void render_title() {
+    // Title shadow
+    set_color(DARK_GRAY_ON_BLACK);
+    set_cursor(TITLE_POSITION_X, 4);
+    print_string("######## ######## ######## ########   #######   ######");
+
+    set_cursor(TITLE_POSITION_X, 5);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X, 6);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##");
+
+    set_cursor(TITLE_POSITION_X, 7);
+    print_string("   ##    ######      ##    ########  ##     ##  ######");
+
+    set_cursor(TITLE_POSITION_X, 8);
+    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
+
+    set_cursor(TITLE_POSITION_X, 9);
+    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X, 10);
+    print_string("   ##    ########    ##    ##     ##  #######   ######");
+
+    // Main title
+    set_color(CYAN_ON_BLACK);
+    set_cursor(TITLE_POSITION_X - 1, 3);
+    print_string("######## ######## ######## ########   #######   ######");
+
+    set_cursor(TITLE_POSITION_X - 1, 4);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 5);
+    print_string("   ##    ##          ##    ##     ## ##     ## ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 6);
+    print_string("   ##    ######      ##    ########  ##     ##  ######");
+
+    set_cursor(TITLE_POSITION_X - 1, 7);
+    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 8);
+    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
+
+    set_cursor(TITLE_POSITION_X - 1, 9);
+    print_string("   ##    ########    ##    ##     ##  #######   ######");
+}
+
+void render_main_menu() {
+    clear_screen(); // Reset screen
+
+    render_main_menu_stars();   // Stars around the screen
+    render_screen_borders();    // Borders around the screen
+
+    render_title();    // Big Title in the middle of the screen
+
+    // Menu options
+    set_cursor(28, 15); // 40 - len("Press 1 to start") / 2
+    set_color(YELLOW_ON_BLACK);
+    print_string("+----------------------+");
+
+    set_cursor(28, 16);
+    print_string("|  [1] Start Game      |");
+    set_cursor(28, 17);
+    print_string("+----------------------+");
+
+    set_color(WHITE_ON_BLACK); // Reset color for next render
+}
+
 void end_game() {
     game_over = true;
     main_menu = true;  // Display main menu again
     // Render field with all filled blocks
-    for (int y = 1; y < FIELD_HEIGHT; y++) {    // rows
+    for (int y = 0; y < FIELD_HEIGHT; y++) {    // rows
         for (int x = 0; x < FIELD_WIDTH; x++) {  // columns
 
-            int draw_x = x * 2 + 1;  // each x uses 2 chars; +1 for border
-            write_char(draw_x, y, BLOCK_CHAR); // first copy
-            write_char(draw_x + 1, y, BLOCK_CHAR);  // second copy
+            // Keep existing blocks
+            if (!IS_CELL_FILLED(field_get(x, y))) {
+                
+                int draw_x = FIELD_X + x * 2 + 1;  // each x uses 2 chars; +1 for border
+                int draw_y = FIELD_Y + 1 + y;
+                draw_char(draw_x, draw_y, BLOCK_CHAR, BLACK_ON_WHITE); // first copy
+                draw_char(draw_x + 1, draw_y, BLOCK_CHAR, BLACK_ON_WHITE);  // second copy
+            }
         }
     }
-    reset_field();
 }
 
 void reset_field() {

@@ -2,9 +2,9 @@
 
 TetrOS is a simple, educational OS that boots directly on x86 hardware or in a virtual machine and runs a playable version of Tetris with all known features.
 
-| Playing | Game over |
-|---------|--------|
-| ![Playing Tetris](screenshots/playing.png) | ![Losing Tetris](screenshots/losing.png) |
+| Main Menu | Playing | Game over |
+|---------|---------|--------|
+|![Main menu](screenshots/main_menu.png)| ![Playing Tetris](screenshots/playing.png) | ![Losing Tetris](screenshots/losing.png) |
 
 ## Overview
 
