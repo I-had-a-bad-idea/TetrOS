@@ -311,7 +311,7 @@ void tetris_render() {
     int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 14; // to the right of the field
     int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
     render_text_panel(score_x, score_y, "Score:");
-    iota(score, score_buffer);
+    iota((int)score, score_buffer);
     render_text_panel(score_x, score_y + 3, score_buffer);
 
     // Render "held" block
@@ -543,6 +543,8 @@ void end_game() {
             }
         }
     }
+    block_held = false;
+    block_active = false;
 }
 
 void reset_field() {
