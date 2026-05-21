@@ -86,4 +86,4 @@ void render_playfield_background();
 void render_main_menu();
 
 void render_box(int x, int y, int width, int height, uint8_t color);
-void render_text_panel(int x, int y, const char* text);
+void render_text_panel(int x, int y, int widdth, int height, const char* text, uint8_t color);

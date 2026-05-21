@@ -310,13 +310,13 @@ void tetris_render() {
     // Render score 
     int score_x = FIELD_X + (FIELD_WIDTH + 1) * 2 + 14; // to the right of the field
     int score_y = FIELD_Y + FIELD_HEIGHT / 2 - 8;
-    render_text_panel(score_x, score_y, "Score:");
+    render_text_panel(score_x, score_y, 15, 3, "Score:", WHITE_ON_BLACK);
     iota((int)score, score_buffer);
-    render_text_panel(score_x, score_y + 3, score_buffer);
+    render_text_panel(score_x, score_y + 3, 15, 3, score_buffer, WHITE_ON_BLACK);
 
     // Render "held" block
     if (block_held) {
-        render_text_panel(HELD_BLOCK_POSTION, 10, "Held block:");
+        render_text_panel(HELD_BLOCK_POSTION, 10, 15, 3, "Held block:", WHITE_ON_BLACK);
         set_cursor(HELD_BLOCK_POSTION, 13);
 
         render_box(HELD_BLOCK_POSTION + 2, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 2, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around held block
@@ -337,7 +337,7 @@ void tetris_render() {
     }
     // Render next block
     if (next_block) {
-        render_text_panel(NEXT_BLOCK_POSITION, 10, "Next block:");
+        render_text_panel(NEXT_BLOCK_POSITION, 10, 15, 3, "Next block:", WHITE_ON_BLACK);
         set_cursor(NEXT_BLOCK_POSITION, 13);
 
         render_box(NEXT_BLOCK_POSITION + 1, 13, BLOCK_ARRAY_AXIS_SIZE * 2 + 4, BLOCK_ARRAY_AXIS_SIZE + 2, WHITE_ON_BLACK); // box around next block
@@ -361,25 +361,25 @@ void tetris_render() {
 void render_box(int x, int y, int width, int height, uint8_t color) {
     // Top and bottom borders
     for (int i = 0; i < width; i++) {
-        write_char(x + i, y, HORIZONTAL_BORDER_CHAR);
-        write_char(x + i, y + height - 1, HORIZONTAL_BORDER_CHAR);
+        draw_char(x + i, y, HORIZONTAL_BORDER_CHAR, color);
+        draw_char(x + i, y + height - 1, HORIZONTAL_BORDER_CHAR, color);
     }
     // Left and right borders
     for (int j = 0; j < height; j++) {
-        write_char(x, y + j, VERTICAL_BORDER_CHAR);
-        write_char(x + width - 1, y + j, VERTICAL_BORDER_CHAR);
+        draw_char(x, y + j, VERTICAL_BORDER_CHAR, color);
+        draw_char(x + width - 1, y + j, VERTICAL_BORDER_CHAR, color);
     }
     // Corners
-    write_char(x, y, '+');
-    write_char(x + width - 1, y, '+');
-    write_char(x, y + height - 1, '+');
-    write_char(x + width - 1, y + height - 1, '+');
+    draw_char(x, y, '+', color);
+    draw_char(x + width - 1, y, '+', color);
+    draw_char(x, y + height - 1, '+', color);
+    draw_char(x + width - 1, y + height - 1, '+', color);
 }
 
-void render_text_panel(int x, int y, const char* text) {
-    render_box(x, y, 15, 3, WHITE_ON_BLACK);
+void render_text_panel(int x, int y, int width, int height, const char* text, uint8_t color) {
+    render_box(x, y, width, height, color);
     set_cursor(x + 2, y + 1);
-    print_string(text);
+    draw_string(x + 2, y + 1, text, color);
 }
 
 void render_borders() {
@@ -514,14 +514,7 @@ void render_main_menu() {
     render_title();    // Big Title in the middle of the screen
 
     // Menu options
-    set_cursor(28, 15); // 40 - len("Press 1 to start") / 2
-    set_color(YELLOW_ON_BLACK);
-    print_string("+----------------------+");
-
-    set_cursor(28, 16);
-    print_string("|  [1] Start Game      |");
-    set_cursor(28, 17);
-    print_string("+----------------------+");
+    render_text_panel(31, 15, 18, 3, "[1] Start Game", YELLOW_ON_BLACK);
 
     set_color(WHITE_ON_BLACK); // Reset color for next render
 }

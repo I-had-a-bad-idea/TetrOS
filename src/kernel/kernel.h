@@ -48,6 +48,7 @@ extern volatile uint32_t cursor_position;
 
 void print_char(char c);
 void print_string(const char* str);
+void draw_string(int x, int y, const char* str, uint8_t color);
 void print_int(int n);
 
 void clear_screen();

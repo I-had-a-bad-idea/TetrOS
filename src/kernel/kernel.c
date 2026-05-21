@@ -72,6 +72,13 @@ void print_char(char c) {
     }
 }
 
+void draw_string(int x, int y, const char* str, uint8_t color) {
+    while (*str) {
+        draw_char(x++, y, *str++, color);
+    }
+    
+}
+
 void print_string(const char* str) {
     while (*str) {
         print_char(*str++);
