@@ -152,6 +152,17 @@ void tetris_step() {
             // Apply rotation
             *current_block.block = rotated_block;
         }
+        // Try with wall kicks
+        else if (can_move(&rotated_block, current_block.x - 1, current_block.y))  {
+            // Apply wall kicked rotation (one to left)
+            *current_block.block = rotated_block;
+            current_block.x--;
+        }
+        else if (can_move(&rotated_block, current_block.x + 1, current_block.y)) {
+            // Apply wall kicked rotation (one to rigth)
+            *current_block.block = rotated_block;
+            current_block.x++;
+        }
     }
 
     // Movement
