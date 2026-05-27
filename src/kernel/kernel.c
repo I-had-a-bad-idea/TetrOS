@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "tetris/tetris.h"
 
+// List of keys ("key number" is index)
 const char keyboard_scancodes[128] = {
 0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b',
 '\t',
@@ -16,9 +17,27 @@ const char keyboard_scancodes[128] = {
 ' ',
 };
 
+static char pressed_key = 0;
+
+void keyboard_irq(Registers* regs) {
+    uint8_t scancode = inb(0x60);  // Get "key number"
+    if (scancode < 128) { // press
+        char c = keyboard_scancodes[scancode]; // get key from list
+        if (c) {
+            pressed_key = c; // store key 
+        }
+    }
+    else { // release
+        char c = keyboard_scancodes[scancode - 128]; // get key from list
+        if (c && pressed_key == c) { // if it is the current key
+            pressed_key = 0;  // delete current key
+        }
+    }
+}
+
+
 uint16_t timer_event_count = 0;
 timer_event timer_events[MAX_TIMER_EVENTS] = {0};
-static char pressed_key = 0;
 volatile uint32_t cursor_position = 0;
 
 static uint32_t random_seed = 1234567890;
@@ -32,21 +51,6 @@ void timer_irq(Registers* regs) {
     timer_ticks++;
 }
 
-void keyboard_irq(Registers* regs) {
-    uint8_t scancode = inb(0x60);
-    if (scancode < 128) { // press
-        char c = keyboard_scancodes[scancode];
-        if (c) {
-            pressed_key = c;
-        }
-    }
-    else { // release
-        char c = keyboard_scancodes[scancode - 128];
-        if (c && pressed_key == c) {
-            pressed_key = 0;
-        }
-    }
-}
 
 int get_timer_ticks() {
     return timer_ticks;
@@ -190,6 +194,7 @@ void iota(int n, char* buffer) {
 
 void switch_buffers() {
     volatile unsigned short* video_memory = (unsigned short*)VIDEO_MEMORY;
+    // Overwrite screen
     for (int i = 0; i < VIDEO_WIDTH * VIDEO_HEIGHT; i++) {
         video_memory[i] = backbuffer[i];
     }

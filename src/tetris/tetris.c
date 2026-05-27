@@ -536,6 +536,8 @@ void end_game() {
             }
         }
     }
+    // Display game over
+    render_text_panel(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2 - 2, 12, 3, "GAME OVER", RED_ON_BLACK);
     block_held = false;
     block_active = false;
 }
