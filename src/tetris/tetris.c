@@ -169,6 +169,7 @@ void tetris_step() {
     // Movement
     if (can_move(current_block.block, desired_x, desired_y)) {
         current_block.x = desired_x;
+        // score += desired_y - current_block.y; // +1 points per cell down
         current_block.y = desired_y;
     }
     // calculate where it will land
@@ -179,6 +180,7 @@ void tetris_step() {
 
     // Hard drop
     if (hard_drop) {
+        // score += block_land_y - current_block.y; // +2 points per cell down
         current_block.y = block_land_y; // Move down as far as possible
     }
 
@@ -210,6 +212,7 @@ void tetris_step() {
 
 
     // Delete full lines
+    int cleared_lines = 0;
     for (int y = 0; y < FIELD_HEIGHT; y++) {
         bool line_full = true;
         for (int x = 0; x < FIELD_WIDTH; x++) {
@@ -219,7 +222,7 @@ void tetris_step() {
             }
         }
         if (line_full) {
-            score += POINTS_PER_LINE;
+            cleared_lines++;
             // Move all lines above down
             for (int ty = y; ty > 0; ty--) {
                 for (int x = 0; x < FIELD_WIDTH; x++) {
@@ -231,6 +234,23 @@ void tetris_step() {
                 field_set(x, 0, CELL_EMPTY);
             }
         }
+    }
+    switch (cleared_lines) {
+        case 1:
+            score += POINTS_PER_LINE;
+            break;
+        case 2:
+            score += POINTS_PER_LINE * 3;
+            break;
+        case 3:
+            score += POINTS_PER_LINE * 5;
+            break;
+        case 4:
+            score += POINTS_PER_LINE * 8;
+            break;
+        // More than 4 impossible (longest piece is 4 long)
+        default:
+            break;
     }
 }
 
