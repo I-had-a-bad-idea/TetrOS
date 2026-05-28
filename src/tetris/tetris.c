@@ -380,6 +380,7 @@ void render_box(int x, int y, int width, int height, uint8_t color) {
 void render_text_panel(int x, int y, int width, int height, const char* text, uint8_t color) {
     render_box(x, y, width, height, color);
     set_cursor(x + 2, y + 1);
+    draw_char(x + 1, y + 1, ' ', color); // Clear space for text
     draw_string(x + 2, y + 1, text, color);
 }
 
@@ -539,7 +540,7 @@ void end_game() {
         }
     }
     // Display game over
-    render_text_panel(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2 - 2, 12, 3, "GAME OVER", RED_ON_BLACK);
+    render_text_panel(VIDEO_WIDTH / 2, VIDEO_HEIGHT / 2 - 2, 12, 3, "GAME OVER", BLACK_ON_RED);
     block_held = false;
     block_active = false;
 }

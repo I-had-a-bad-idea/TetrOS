@@ -209,6 +209,7 @@ volatile void main(){
     print_string("ISR-setup successful!\nSetting up the PICs...\n");
     init_irq();
     print_string("PICs setup successfull!\n");
+    switch_buffers();
 
     // Register timer handler and enable interrupt 0
     irq_register_handler_and_unmask(0, timer_irq);
@@ -218,6 +219,7 @@ volatile void main(){
     print_string("Starting tetris");
     init_tetris();
 
+    switch_buffers();
     clear_screen();
     int last_timer_ticks = 0;
     while (1) {
