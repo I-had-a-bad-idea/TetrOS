@@ -14,7 +14,6 @@ typedef unsigned char       uint8_t;
 #define NEXT_BLOCK_POSITION VIDEO_WIDTH - 33
 
 #define TITLE_POSITION_X 12
-#define MAIN_MENU_STAR_COUNT 100
 
 #define TETRIS_RENDER_TICKS 1
 #define TETRIS_STEP_TICKS 3
@@ -84,6 +83,7 @@ void reset_field();
 
 void render_playfield_background();
 void render_main_menu();
+void render_background();
 
 void render_box(int x, int y, int width, int height, uint8_t color);
 void render_text_panel(int x, int y, int widdth, int height, const char* text, uint8_t color);

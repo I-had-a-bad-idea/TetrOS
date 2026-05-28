@@ -6,6 +6,7 @@ bool block_held = false;
 
 bool game_over = false;
 uint8_t game_over_wait_ticks = 0;
+uint8_t background_ticks = 0;
 volatile bool main_menu = true;
 
 ActiveBlock current_block = {0};
@@ -14,13 +15,13 @@ Block* held_block = {0};
 Block* next_block = {0};
 
 int block_land_y = 0;
-int block_fall_tick_counter = 0;
+uint8_t block_fall_tick_counter = 0;
 
 float score = 0.0;
 char score_buffer[20] = {0};
 
 Block* get_random_block() {
-    int block_type = rand_range(0, 6);
+    uint8_t block_type = (uint8_t)rand_range(0, 6);
     switch (block_type) {
         case 0: return &I; break;
         case 1: return &O; break;
@@ -46,8 +47,8 @@ void init_tetris() {
 
 void rotate_block(Block* src, Block* dst, int direction) {
     // direction = 1 for clockwise, -1 for counter-clockwise
-    for (int x = 0; x < BLOCK_ARRAY_AXIS_SIZE; x++) {
-        for (int y = 0; y < BLOCK_ARRAY_AXIS_SIZE; y++) {
+    for (uint8_t x = 0; x < BLOCK_ARRAY_AXIS_SIZE; x++) {
+        for (uint8_t y = 0; y < BLOCK_ARRAY_AXIS_SIZE; y++) {
             
             if (direction == 1) { //clockwise
                 dst->cells[x][y] = src->cells[BLOCK_ARRAY_AXIS_SIZE - 1 - y][x];
@@ -59,8 +60,8 @@ void rotate_block(Block* src, Block* dst, int direction) {
 }
 
 bool can_move(Block* block, int desired_x, int desired_y) {
-    for (int bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
-        for (int by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
+    for (uint8_t bx = 0; bx < BLOCK_ARRAY_AXIS_SIZE; bx++) {
+        for (uint8_t by = 0; by < BLOCK_ARRAY_AXIS_SIZE; by++) {
             if (block->cells[bx][by]) {
                 int field_x = desired_x + bx;
                 int field_y = desired_y + by;
@@ -407,17 +408,6 @@ void render_borders() {
     write_char(x2, y2, '+');
 }
 
-void render_background() {
-    set_color(DARK_GRAY_ON_BLACK);
-    for (int y = 0; y < VIDEO_HEIGHT; y++) {
-        for (int x = 0; x < VIDEO_WIDTH; x++) {
-            if (rand_range(0, 100) < 2) { // ~2% chance to render a dot for subtle starry background
-                write_char(x, y, '.');
-            }
-        }
-    }
-}
-
 void render_playfield_background() {
     render_background();
     render_borders();
@@ -425,15 +415,27 @@ void render_playfield_background() {
     set_color(WHITE_ON_BLACK); // Reset color for next render
 }
 
-void render_main_menu_stars() {
-    // Render some random stars in the background of the main menu
-    set_color(DARK_GRAY_ON_BLACK);
-    for (int i = 0; i < MAIN_MENU_STAR_COUNT; i++) {
-        int x = rand_range(0, VIDEO_WIDTH - 1);
-        int y = rand_range(0, VIDEO_HEIGHT - 1);
+void render_background() {
 
-        write_char(x, y, '.');
+    set_color(DARK_GRAY_ON_BLACK);
+
+    for (uint8_t y = 0; y < VIDEO_HEIGHT; y++) {
+        for (uint8_t x = 0; x < VIDEO_WIDTH; x++) {
+            char c = ' ';
+            int v =
+                ((x + background_ticks) % 11 == 0) ^
+                ((y + background_ticks / 2) % 7 == 0);
+
+            if (v)
+                c = '.';
+            if ((x + y + background_ticks) % 23 == 0)
+                c = '+';
+
+            write_char(x, y, c);
+        }
     }
+
+    background_ticks++;
 }
 
 void render_screen_borders() {
@@ -508,7 +510,7 @@ void render_title() {
 void render_main_menu() {
     clear_screen(); // Reset screen
 
-    render_main_menu_stars();   // Stars around the screen
+    render_background();   // Stars around the screen
     render_screen_borders();    // Borders around the screen
 
     render_title();    // Big Title in the middle of the screen
