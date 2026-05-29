@@ -169,7 +169,7 @@ void tetris_step() {
     // Movement
     if (can_move(current_block.block, desired_x, desired_y)) {
         current_block.x = desired_x;
-        // score += desired_y - current_block.y; // +1 points per cell down
+        score += desired_y - current_block.y; // +1 points per cell down
         current_block.y = desired_y;
     }
     // calculate where it will land
@@ -180,7 +180,7 @@ void tetris_step() {
 
     // Hard drop
     if (hard_drop) {
-        // score += block_land_y - current_block.y; // +2 points per cell down
+        score += block_land_y - current_block.y; // +2 points per cell down
         current_block.y = block_land_y; // Move down as far as possible
     }
 

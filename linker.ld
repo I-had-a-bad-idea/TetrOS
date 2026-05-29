@@ -2,7 +2,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = 0x1000;
+	. = 0x10000;
 
   	/* text section */
 	.text BLOCK(4K) : ALIGN(4K)

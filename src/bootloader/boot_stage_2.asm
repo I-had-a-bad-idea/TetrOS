@@ -1,8 +1,9 @@
 [org 0x8000] ; set origin to offset
 [bits 16]
 
-KERNEL_LOCATION equ 0x1000 ; set kernel memory address
+KERNEL_LOCATION equ 0x10000 ; set kernel memory address
 FRAMEBUFFER_INFO_LOCATION equ 0x9000
+
 
 xor ax, ax                 ; ax = 0     
 mov es, ax                 ; es = 0
@@ -10,18 +11,69 @@ mov ds, ax                 ; ds = 0
 
 
 ; Load kernel from disk
-mov bx, KERNEL_LOCATION   ; offset where kernel will be loaded 
 
-mov ah, 0x02         ; read floppy/hard disk in CHS mode
-mov al, 34           ; number of sectors to read (currently reads too much to avoid future problems)
-mov ch, 0         ; cylinder number = 0
-mov dh, 0         ; head number = 0
-mov cl, 7           ; sector number = 8 (sector 1 is stage1 and sections 2-6 is stage2 )
-; dl already contains drive number
-int 0x13             ; read from disk
-; error management
-jc disk_error        ; jmp to disk_error if cf is 1 (error)
+mov ax, KERNEL_LOCATION >> 4
+mov es, ax
+mov bx, 0x0000
 
+; -------------------------
+; Read remaining sectors on head 0
+; sectors 7-18 = 12 sectors
+; -------------------------
+
+mov ah, 0x02
+mov al, 12
+mov ch, 0
+mov dh, 0
+mov cl, 7
+int 0x13
+jc disk_error
+
+; advance buffer
+add bx, 12 * 512
+
+; -------------------------
+; Read entire head 1
+; sectors 1-18 = 18 sectors
+; -------------------------
+
+mov ah, 0x02
+mov al, 18
+mov ch, 0
+mov dh, 1
+mov cl, 1
+int 0x13
+jc disk_error
+
+add bx, 18 * 512
+
+; -------------------------
+; Read cylinder 1 head 0
+; sectors 1-18 = 18 sectors
+; -------------------------
+
+mov ah, 0x02
+mov al, 18
+mov ch, 1
+mov dh, 0
+mov cl, 1
+int 0x13
+jc disk_error
+
+add bx, 18 * 512
+
+; -------------------------
+; Read final 12 sectors
+; cylinder 1 head 1
+; -------------------------
+
+mov ah, 0x02
+mov al, 12
+mov ch, 1
+mov dh, 1
+mov cl, 1
+int 0x13
+jc disk_error
 
 ; Video mode
 mov ah, 0x0          ; set video mode
