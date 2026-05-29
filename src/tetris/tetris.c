@@ -440,7 +440,9 @@ void render_playfield_background() {
 }
 
 void render_background() {
-
+    for (int i = 0; i < rand_range(10, 100); i++) {
+        rand32(); // cause abunch of randomness
+    }
     set_color(DARK_GRAY_ON_BLACK);
 
     for (uint8_t y = 0; y < VIDEO_HEIGHT; y++) {
