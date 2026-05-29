@@ -180,8 +180,11 @@ void tetris_step() {
 
     // Hard drop
     if (hard_drop) {
-        score += block_land_y - current_block.y; // +2 points per cell down
-        current_block.y = block_land_y; // Move down as far as possible
+        // Dont allow hard drop in first tick (stops accidental hard drop when spawning new block)
+        if (current_block.y > 0) {
+            score += block_land_y - current_block.y; // +2 points per cell down
+            current_block.y = block_land_y; // Move down as far as possible
+        }
     }
 
     //// Physics step
