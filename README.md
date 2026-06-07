@@ -16,7 +16,6 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
     - [Building](#building)
   - [Running](#running)
     - [Controls](#controls)
-  - [Troubleshooting](#troubleshooting)
   - [Field design](#field-design)
   - [License](#license)
   - [Disclaimer](#disclaimer)
@@ -49,30 +48,20 @@ TetrOS is a simple, educational OS that boots directly on x86 hardware or in a v
 
 ### Building
 
-1. **Assemble the bootloader:**
+1. Build:
    ```bash
-   make -f Assembly.mk
+   make
    ```
-2. Build the kernel:
+   or to create a Floppy disk:
    ```bash
-   make -f Kernel.mk
-   ```
-3. (Optionally) Put into a disk image
-   ```bash
-   make -f DiskImage.mk
-   ```
-4. All together:
-   ```bash
-   make -f Assembly.mk
-   make -f Kernel.mk
-   make -f DiskImage.mk
+   make image
    ```
 
 ## Running
 The build process creates a bootable image `TetrOS.bin`
 You can boot this image in a VM-Software (VirtualBox, QEMU, etc.) or write it to a USB drive for real hardware (use with caution, not tested).
 
-In case of VirtualBox use the `TetrOS.img` disk image
+In case of VirtualBox use the `TetrOS.img` floppy disk image
 
 ### Controls
 Press 1 to start the game.
@@ -86,12 +75,6 @@ Press 1 to start the game.
 - C: Hold/ switch block
 - space: Hard drop (instant move to bottom)
 
-
-## Troubleshooting
-- If the OS fails to boot or hangs: Try increasing the loaded sectors in `boot.asm` (see the `mov dh, ...` line).
-- If only a white `A` appears on screen the calling of the kernel main function failed
-
-Feel free to open an issue, if any problems arise.
 
 ## Field design
 The field is made with a 1D bitmap. Each cell has 4 bits: 1 for filled/empty and 3 for color (8 colors). The field is 10 cells wide and 20 cells high.
