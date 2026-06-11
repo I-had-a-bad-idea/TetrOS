@@ -402,7 +402,6 @@ void render_box(int x, int y, int width, int height, uint8_t color) {
 
 void render_text_panel(int x, int y, int width, int height, const char* text, uint8_t color) {
     render_box(x, y, width, height, color);
-    set_cursor(x + 2, y + 1);
     draw_char(x + 1, y + 1, ' ', color); // Clear space for text
     draw_string(x + 2, y + 1, text, color);
 }
@@ -487,50 +486,22 @@ void render_screen_borders() {
 
 void render_title() {
     // Title shadow
-    set_color(DARK_GRAY_ON_BLACK);
-    set_cursor(TITLE_POSITION_X, 4);
-    print_string("######## ######## ######## ########   #######   ######");
-
-    set_cursor(TITLE_POSITION_X, 5);
-    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
-
-    set_cursor(TITLE_POSITION_X, 6);
-    print_string("   ##    ##          ##    ##     ## ##     ## ##");
-
-    set_cursor(TITLE_POSITION_X, 7);
-    print_string("   ##    ######      ##    ########  ##     ##  ######");
-
-    set_cursor(TITLE_POSITION_X, 8);
-    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
-
-    set_cursor(TITLE_POSITION_X, 9);
-    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
-
-    set_cursor(TITLE_POSITION_X, 10);
-    print_string("   ##    ########    ##    ##     ##  #######   ######");
+    draw_string(TITLE_POSITION_X, 4, "######## ######## ######## ########   #######   ###### ", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 5, "   ##    ##          ##    ##     ## ##     ## ##    ##", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 6, "   ##    ##          ##    ##     ## ##     ## ##      ", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 7, "   ##    ######      ##    ########  ##     ##  ###### ", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 8, "   ##    ##          ##    ##   ##   ##     ##       ##", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 9, "   ##    ##          ##    ##    ##  ##     ## ##    ##", DARK_GRAY_ON_BLACK);
+    draw_string(TITLE_POSITION_X, 10,"   ##    ########    ##    ##     ##  #######   ###### ", DARK_GRAY_ON_BLACK);
 
     // Main title
-    set_color(CYAN_ON_BLACK);
-    set_cursor(TITLE_POSITION_X - 1, 3);
-    print_string("######## ######## ######## ########   #######   ######");
-
-    set_cursor(TITLE_POSITION_X - 1, 4);
-    print_string("   ##    ##          ##    ##     ## ##     ## ##    ##");
-
-    set_cursor(TITLE_POSITION_X - 1, 5);
-    print_string("   ##    ##          ##    ##     ## ##     ## ##");
-
-    set_cursor(TITLE_POSITION_X - 1, 6);
-    print_string("   ##    ######      ##    ########  ##     ##  ######");
-
-    set_cursor(TITLE_POSITION_X - 1, 7);
-    print_string("   ##    ##          ##    ##   ##   ##     ##       ##");
-
-    set_cursor(TITLE_POSITION_X - 1, 8);
-    print_string("   ##    ##          ##    ##    ##  ##     ## ##    ##");
-
-    set_cursor(TITLE_POSITION_X - 1, 9);
-    print_string("   ##    ########    ##    ##     ##  #######   ######");
+    draw_string(TITLE_POSITION_X - 1, 3, "######## ######## ######## ########   #######   ###### ", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 4, "   ##    ##          ##    ##     ## ##     ## ##    ##", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 5, "   ##    ##          ##    ##     ## ##     ## ##      ", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 6, "   ##    ######      ##    ########  ##     ##  ###### ", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 7, "   ##    ##          ##    ##   ##   ##     ##       ##", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 8, "   ##    ##          ##    ##    ##  ##     ## ##    ##", CYAN_ON_BLACK);
+    draw_string(TITLE_POSITION_X - 1, 9, "   ##    ########    ##    ##     ##  #######   ###### ", CYAN_ON_BLACK);
 }
 
 void render_main_menu() {
